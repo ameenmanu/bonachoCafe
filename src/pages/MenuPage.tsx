@@ -132,6 +132,10 @@ export function MenuPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+  const [scrollLeft, setScrollLeft] = useState(0);
+  const [containerWidth, setContainerWidth] = useState(0);
+
   // We use the first product's image as the category icon
   const categoriesList = menuData.map(cat => ({
     id: cat.id,
@@ -155,6 +159,41 @@ export function MenuPage() {
     setCurrentPage(1);
   }, [activeCategoryId, searchQuery, showTopRated]);
 
+  // Responsive curve calculations
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    
+    const handleScroll = () => setScrollLeft(container.scrollLeft);
+    const handleResize = () => setContainerWidth(container.offsetWidth);
+    
+    handleResize();
+    
+    container.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleResize);
+    
+    return () => {
+      container.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  const calculateCurve = (index: number) => {
+    if (containerWidth === 0) {
+      return Math.pow(Math.abs(index - (categoriesList.length - 1) / 2), 2) * 6;
+    }
+    
+    const viewportCenter = scrollLeft + (containerWidth / 2);
+    // Estimate item center (approx 96px width per item + padding)
+    const itemCenter = 32 + (index * 96) + 48;
+    const dist = Math.abs(itemCenter - viewportCenter);
+    
+    // Adjust scale based on screen width (tighter curve on mobile)
+    const scale = containerWidth < 600 ? 55 : 80;
+    
+    return Math.pow(dist / scale, 2) * 3;
+  };
+
   const toggleWishlist = (id: number) => {
     setWishlist(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   };
@@ -164,7 +203,6 @@ export function MenuPage() {
       {/* Curved Background Shape */}
       <div 
         className="absolute top-[240px] left-1/2 -translate-x-1/2 w-[150vw] md:w-[120vw] h-[200vh] bg-[#F5F6F8] rounded-t-[50%] md:rounded-t-[100%] z-0" 
-
         style={{ pointerEvents: 'none' }}
       ></div>
 
@@ -199,15 +237,18 @@ export function MenuPage() {
         </div>
 
         {/* Categories (Horizontal Scroll) */}
-        <div className="flex gap-6 overflow-x-auto pb-16 pt-8 scrollbar-hide -mx-4 px-8 md:mx-0 md:px-4 items-start justify-start">
+        <div 
+          ref={scrollContainerRef}
+          className="flex gap-6 overflow-x-auto pb-16 pt-8 scrollbar-hide -mx-4 px-8 md:mx-0 md:px-4 items-start justify-start relative"
+        >
           {categoriesList.map((cat, i) => (
             <button
               key={cat.id}
               onClick={() => setActiveCategoryId(cat.id)}
               className="flex flex-col items-center gap-2 min-w-[72px]"
               style={{ 
-                transform: `translateY(${Math.pow(Math.abs(i - (categoriesList.length - 1) / 2), 2) * 6}px)`,
-                transition: 'transform 0.3s ease'
+                transform: `translateY(${calculateCurve(i)}px)`,
+                transition: 'transform 0.1s linear'
               }}
             >
               <div className={`w-16 h-16 rounded-full flex items-center justify-center bg-white shadow-sm p-3 transition-transform ${activeCategoryId === cat.id ? 'scale-110 shadow-md ring-2 ring-offset-2 ring-[#1A1A1A]' : ''}`}>
