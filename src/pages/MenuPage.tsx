@@ -231,7 +231,6 @@ export function MenuPage() {
                 <ChevronRight className="w-6 h-6" />
               </button>
 
-              <div className="bg-text">{category.bgText}</div>
               <AnimatePresence
                 initial={false}
                 custom={direction}
