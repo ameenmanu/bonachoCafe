@@ -3,7 +3,16 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'node:path'
 
-import siteConfiguration from './.figma/make/site.json'
+const siteConfiguration = {
+  "description": "Engaging animated cafe website showcasing a burger that explodes to reveal menu, story, and shop details with smooth scroll-triggered animations and mobile-friendly navigation.",
+  "robots": {
+    "index": true
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
 
 
 // Vite config — https://vitejs.dev/config/
