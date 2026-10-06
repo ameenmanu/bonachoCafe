@@ -26,69 +26,123 @@ function Arrow() {
 function BurgerStory() {
   const containerRef = useRef<HTMLElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const ctxRef = useRef<CanvasRenderingContext2D | null>(null)
   const lastDrawnFrameRef = useRef(-1)
-  const imagesRef = useRef<HTMLImageElement[]>([])
+  const bitmapsRef = useRef<(ImageBitmap | HTMLImageElement | null)[]>([])
   const playheadRef = useRef({ frame: 0 })
   const frameCount = 99
+
+  // Coarse-to-fine order: 0,8,16... then 4,12... then 2,6... then the rest
+  const loadOrder = (() => {
+    const seen = new Set<number>(), order: number[] = []
+    for (const step of [8, 4, 2, 1]) {
+      for (let i = 0; i < frameCount; i += step) {
+        if (!seen.has(i)) { seen.add(i); order.push(i) }
+      }
+    }
+    return order
+  })()
 
   // 1. Preload + decode
   useEffect(() => {
     let cancelled = false
-    const imgs: HTMLImageElement[] = Array(frameCount).fill(null)
-    
-    // Load first image immediately to paint the initial state without blocking
-    const firstImg = new Image()
-    firstImg.src = `/frames/ezgif-frame-001.jpg`
-    firstImg.onload = () => {
-      if (!cancelled) {
-        imagesRef.current[0] = firstImg
-        drawFrame(playheadRef.current.frame)
-        
-        let loadedCount = 1;
-        const checkDone = () => {
-          loadedCount++;
-          if (loadedCount === frameCount) {
-            window.dispatchEvent(new Event('burger-frames-loaded'));
-          }
-        }
+    bitmapsRef.current = Array(frameCount).fill(null)
+    const queue = [...loadOrder]
+    let loadedCount = 0
 
-        // Progressively load the rest of the sequence in the background
-        for (let i = 1; i < frameCount; i++) {
-          const img = new Image()
-          img.onload = checkDone
-          img.onerror = checkDone
-          img.src = `/frames/ezgif-frame-${String(i + 1).padStart(3, "0")}.jpg`
-          imagesRef.current[i] = img
+    const loadOne = async (i: number) => {
+      try {
+        const url = `/frames/ezgif-frame-${String(i + 1).padStart(3, "0")}.jpg`
+        const response = await fetch(url)
+        const blob = await response.blob()
+        
+        let bmp: ImageBitmap | HTMLImageElement
+        if ("createImageBitmap" in window) {
+          bmp = await createImageBitmap(blob)
+        } else {
+          bmp = await new Promise<HTMLImageElement>((res, rej) => {
+            const img = new Image()
+            img.src = URL.createObjectURL(blob)
+            img.onload = () => res(img)
+            img.onerror = rej
+          })
         }
+        
+        if (cancelled) {
+          if ('close' in bmp) bmp.close()
+          return
+        }
+        
+        bitmapsRef.current[i] = bmp
+        loadedCount++
+        
+        if (loadedCount === frameCount) {
+           window.dispatchEvent(new Event('burger-frames-loaded'))
+        }
+        
+        if (i === 0) drawFrame(playheadRef.current.frame)
+      } catch (err) {
+        console.error("Failed to load frame", i)
+      }
+    }
+
+    const worker = async () => {
+      while (!cancelled && queue.length) {
+        await loadOne(queue.shift()!)
       }
     }
     
-    imagesRef.current = imgs
+    // 6 concurrent loaders
+    Promise.all(Array.from({ length: 6 }, worker))
 
-    return () => { cancelled = true }
+    return () => { 
+      cancelled = true 
+      bitmapsRef.current.forEach(b => {
+        if (b && 'close' in b) b.close()
+      })
+    }
   }, [])
 
-  // 2. Size the canvas ONLY on resize (not inside drawFrame)
+  const nearestLoaded = (idx: number) => {
+    const b = bitmapsRef.current
+    for (let d = 0; d < frameCount; d++) {
+      if (b[idx - d]) return idx - d
+      if (b[idx + d]) return idx + d
+    }
+    return -1
+  }
+
+  // 2. Size the canvas ONLY on resize (ignore height changes for mobile address bar)
   const sizeCanvas = () => {
     const canvas = canvasRef.current
     if (!canvas) return
     const dpr = Math.min(window.devicePixelRatio || 1, 2)
     canvas.width = window.innerWidth * dpr
     canvas.height = window.innerHeight * dpr
+    // Cache the context for speed
+    ctxRef.current = canvas.getContext("2d", { alpha: false })
     lastDrawnFrameRef.current = -1
   }
 
   const drawFrame = (index: number) => {
     const canvas = canvasRef.current
-    const frameIndex = Math.max(0, Math.min(frameCount - 1, Math.round(index)))
-    const img = imagesRef.current[frameIndex]
-    if (!canvas || !img || !img.naturalWidth) return
-    if (lastDrawnFrameRef.current === frameIndex) return
+    const ctx = ctxRef.current
+    if (!canvas || !ctx) return
 
-    const ctx = canvas.getContext("2d", { alpha: false })!
+    const targetIndex = Math.max(0, Math.min(frameCount - 1, Math.round(index)))
+    const bestIndex = nearestLoaded(targetIndex)
+    if (bestIndex === -1) return // Nothing loaded yet
+    if (lastDrawnFrameRef.current === bestIndex) return // Already drawing this frame
+
+    const img = bitmapsRef.current[bestIndex]
+    if (!img) return
+
     const cw = canvas.width
     const ch = canvas.height
-    const imgRatio = img.naturalWidth / img.naturalHeight
+    // ImageBitmap uses .width and .height instead of naturalWidth
+    const imgW = img.width
+    const imgH = img.height
+    const imgRatio = imgW / imgH
     const canvasRatio = cw / ch
 
     let dw, dh, ox, oy
@@ -98,10 +152,10 @@ function BurgerStory() {
       dh = ch; dw = ch * imgRatio; ox = (cw - dw) * 0.75; oy = 0
     }
     
-    ctx.fillStyle = "#000"          // must match the frame background
+    ctx.fillStyle = "#000"
     ctx.fillRect(0, 0, cw, ch)
     ctx.drawImage(img, ox, oy, dw, dh)
-    lastDrawnFrameRef.current = frameIndex
+    lastDrawnFrameRef.current = bestIndex
   }
 
   // 3. GSAP ScrollTrigger Logic
@@ -109,7 +163,13 @@ function BurgerStory() {
     sizeCanvas()
     drawFrame(playheadRef.current.frame)
 
-    const onResize = () => { sizeCanvas(); drawFrame(playheadRef.current.frame) }
+    let lastW = window.innerWidth
+    const onResize = () => { 
+      if (window.innerWidth === lastW) return // Ignore address bar collapsing on iOS
+      lastW = window.innerWidth
+      sizeCanvas() 
+      drawFrame(playheadRef.current.frame) 
+    }
     window.addEventListener("resize", onResize)
 
     const tl = gsap.timeline({
@@ -118,8 +178,8 @@ function BurgerStory() {
         start: "top top",
         end: "+=300%",
         pin: true,
-        // Huge smoothing inertia: 1.5 seconds of smooth catch-up time
-        scrub: 1.5,
+        // Reverting to 0.5 because the pre-decoded frames are super fast now
+        scrub: 0.5,
       }
     })
 
@@ -132,25 +192,11 @@ function BurgerStory() {
     }, 0)
 
     // Title fades out
-    tl.to('.hero-title', {
-      opacity: 0,
-      ease: "none",
-      duration: 0.15
-    }, 0.05)
-
+    tl.to('.hero-title', { opacity: 0, ease: "none", duration: 0.15 }, 0.05)
     // Mid-scroll quote fades in
-    tl.to('.hero-subtitle', {
-      opacity: 1,
-      ease: "none",
-      duration: 0.15
-    }, 0.25)
-
+    tl.to('.hero-subtitle', { opacity: 1, ease: "none", duration: 0.15 }, 0.25)
     // Mid-scroll quote fades out
-    tl.to('.hero-subtitle', {
-      opacity: 0,
-      ease: "none",
-      duration: 0.15
-    }, 0.55)
+    tl.to('.hero-subtitle', { opacity: 0, ease: "none", duration: 0.15 }, 0.55)
 
     // Intro card slides up
     tl.fromTo('.intro-card',
