@@ -101,7 +101,17 @@ const baseMenuData = [
   }
 ];
 
-const allProducts = baseMenuData.flatMap(cat => cat.products);
+// Add stable mock ratings for the filter
+const menuDataWithRatings = baseMenuData.map(cat => ({
+  ...cat,
+  products: cat.products.map(p => ({
+    ...p,
+    rating: (4.0 + ((p.id * 17) % 11) / 10).toFixed(1),
+    reviews: 50 + (p.id * 23) % 250
+  }))
+}));
+
+const allProducts = menuDataWithRatings.flatMap(cat => cat.products);
 const menuData = [
   {
     id: "all",
@@ -111,14 +121,15 @@ const menuData = [
     description: "BROWSE OUR ENTIRE COLLECTION OF PREMIUM PRODUCTS.",
     products: allProducts
   },
-  ...baseMenuData
+  ...menuDataWithRatings
 ];
 
 export function MenuPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isAnimating, setIsAnimating] = useState(false); // Prevents glitch on fast clicks
+  const [showTopRated, setShowTopRated] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const handleNext = () => {
     if (isAnimating) return;
@@ -173,8 +184,28 @@ export function MenuPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <button className="filter-btn" aria-label="Filter">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></svg>
+          <button 
+            className="filter-btn" 
+            aria-label="Filter Top Rated"
+            onClick={() => setShowTopRated(!showTopRated)}
+            style={{ 
+              backgroundColor: showTopRated ? '#D32F2F' : 'transparent',
+              color: showTopRated ? 'white' : 'currentColor',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.5rem 1rem',
+              borderRadius: '9999px',
+              border: '1px solid #D32F2F',
+              fontSize: '0.9rem',
+              fontWeight: 'bold',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill={showTopRated ? "white" : "currentColor"} stroke={showTopRated ? "white" : "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            {showTopRated ? "Top Rated Only" : "Filter Top Rated"}
           </button>
         </div>
         <div className="menu-categories-horizontal">
@@ -248,9 +279,11 @@ export function MenuPage() {
                 >
                   <div className="products-grid">
                     {(() => {
-                      const filteredProducts = category.products.filter(p =>
-                        p.name.toLowerCase().includes(searchQuery.toLowerCase())
-                      );
+                      const filteredProducts = category.products.filter(p => {
+                        const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
+                        const matchesRating = showTopRated ? parseFloat(p.rating) >= 4.7 : true;
+                        return matchesSearch && matchesRating;
+                      });
 
                       if (filteredProducts.length === 0) {
                         return (
@@ -275,6 +308,7 @@ export function MenuPage() {
                         >
                           <img src={p.image} alt={p.name} />
                           <h4>{p.name}</h4>
+                          <span style={{ fontSize: '0.8rem', color: '#ffc107', margin: '0.2rem 0' }}>★ {p.rating} ({p.reviews})</span>
                           <span>{p.price}</span>
                         </motion.div>
                       ));

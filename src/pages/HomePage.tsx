@@ -464,6 +464,23 @@ function HighlightsSection() {
             ))}
           </div>
         )}
+
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '3rem' }}>
+          <Link to="/menu" style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            padding: '1rem 2rem',
+            backgroundColor: '#D32F2F',
+            color: 'white',
+            fontWeight: 'bold',
+            borderRadius: '9999px',
+            textDecoration: 'none',
+            boxShadow: '0 4px 6px -1px rgba(211, 47, 47, 0.4)'
+          }}>
+            See Full Menu <Arrow />
+          </Link>
+        </div>
       </div>
     </section>
   )
