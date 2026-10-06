@@ -141,14 +141,7 @@ export function MenuPage() {
     setCurrentIndex(index);
   }
 
-  const handleDragEnd = (e: any, { offset, velocity }: any) => {
-    const swipe = Math.abs(offset.x) * velocity.x;
-    if (swipe < -100) {
-      handleNext();
-    } else if (swipe > 100) {
-      handlePrev();
-    }
-  };
+
 
   const category = menuData[currentIndex];
 
@@ -253,10 +246,6 @@ export function MenuPage() {
                   exit="exit"
                   transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
                   className="carousel-slide-grid"
-                  drag="x"
-                  dragConstraints={{ left: 0, right: 0 }}
-                  dragElastic={1}
-                  onDragEnd={handleDragEnd}
                 >
                   <div className="products-grid">
                     {(() => {
