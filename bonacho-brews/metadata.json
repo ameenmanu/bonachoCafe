@@ -1,6 +1,0 @@
-{
-  "name": "Café Bonacho Reviews & Drink Gallery",
-  "description": "Customer drink reviews, photo gallery, ratings, and popular item filters for Café Bonacho.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
