@@ -361,7 +361,7 @@ function FriesChapter() {
 }
 
 const TopProducts = [
-  { id: 1, name: "Vanilla Bean Flat White", rating: "5.0", reviews: 124, img: "/assets/coldcofeejpg.jpg", price: "$4.50" },
+  { id: 1, name: "Vanilla Bean Flat White", rating: "5.0", reviews: 124, img: "/assets/blueberry-shake.png", price: "$4.50" },
   { id: 2, name: "Loaded Truffle Fries", rating: "4.9", reviews: 89, img: "/assets/loaded-fries.png", price: "$8.00" },
   { id: 3, name: "Strawberry Burst Shake", rating: "5.0", reviews: 210, img: "/assets/strawberry-shake.png", price: "$6.50" },
   { id: 4, name: "Berry Delight Cup", rating: "4.8", reviews: 156, img: "/assets/berry-cup.png", price: "$5.50" },
@@ -376,10 +376,10 @@ function HighlightsSection() {
     "/assets/7c73847210101b7ec1b57148ed1cfe74.jpg",
   ];
 
-  const topRated = TopProducts.slice(0, 4);
+  const topRated = TopProducts.slice(0, 5);
 
   return (
-    <section className="bg-[#FAF8F5] py-20 w-full relative z-20 border-b border-[#EADBCE]">
+    <section className="bg-[#FAF8F5] py-20 w-full relative z-20 border-b border-[#EADBCE] font-sans">
       <div className="text-center mb-10 px-6">
         <p className="text-[#2C221B] font-bold uppercase tracking-wider text-sm mb-2">Our Highlights</p>
         <h2 className="font-serif text-4xl md:text-5xl font-extrabold text-[#D32F2F] leading-tight" style={{ fontFamily: '"Fraunces", serif' }}>
@@ -387,58 +387,41 @@ function HighlightsSection() {
         </h2>
         
         {/* Tabs */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '2rem' }}>
+        <div className="flex justify-center gap-4 mt-8">
           <button 
             onClick={() => setActiveTab("topRated")}
-            style={{
-              padding: '0.75rem 1.5rem',
-              borderRadius: '9999px',
-              border: activeTab === "topRated" ? 'none' : '1px solid #D32F2F',
-              backgroundColor: activeTab === "topRated" ? '#D32F2F' : 'transparent',
-              color: activeTab === "topRated" ? 'white' : '#D32F2F',
-              fontWeight: 700,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
+            className={`px-6 py-2 rounded-full font-bold text-sm transition-colors ${activeTab === 'topRated' ? 'bg-[#D32F2F] text-white' : 'border border-[#D32F2F] text-[#D32F2F] bg-transparent'}`}
           >
             Highly Reviewed
           </button>
           <button 
             onClick={() => setActiveTab("combos")}
-            style={{
-              padding: '0.75rem 1.5rem',
-              borderRadius: '9999px',
-              border: activeTab === "combos" ? 'none' : '1px solid #D32F2F',
-              backgroundColor: activeTab === "combos" ? '#D32F2F' : 'transparent',
-              color: activeTab === "combos" ? 'white' : '#D32F2F',
-              fontWeight: 700,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease'
-            }}
+            className={`px-6 py-2 rounded-full font-bold text-sm transition-colors ${activeTab === 'combos' ? 'bg-[#D32F2F] text-white' : 'border border-[#D32F2F] text-[#D32F2F] bg-transparent'}`}
           >
             Today's Combos
           </button>
         </div>
       </div>
 
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1rem' }}>
+      <div className="max-w-6xl mx-auto px-4 md:px-8">
         {activeTab === "topRated" && (
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
-            gap: '2rem',
-            justifyItems: 'center'
-          }}>
+          <div className="flex gap-4 overflow-x-auto pb-8 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
             {topRated.map((product, i) => (
-              <Link to="/menu" key={`${product.id}-${i}`} className="marquee-card" style={{ width: '100%', maxWidth: '300px', margin: 0 }}>
-                <img src={product.img} alt={product.name} className="marquee-img" />
-                <div className="marquee-content">
-                  <div className="marquee-title-row">
-                    <h3 className="marquee-name">{product.name}</h3>
-                    <span className="marquee-price">{product.price}</span>
+              <Link 
+                to="/menu" 
+                key={`${product.id}-${i}`} 
+                className="bg-white rounded-2xl p-4 shadow-sm min-w-[200px] md:min-w-[240px] flex-shrink-0 snap-start hover:shadow-md transition-shadow"
+              >
+                <div className="w-full h-32 md:h-40 flex items-center justify-center mb-4">
+                  <img src={product.img} alt={product.name} className="w-full h-full object-contain hover:scale-105 transition-transform" />
+                </div>
+                <div>
+                  <div className="flex justify-between items-start gap-2">
+                    <h3 className="font-bold text-[#1A1A1A] text-sm md:text-base leading-tight flex-1">{product.name}</h3>
+                    <span className="font-bold text-[#D32F2F] text-sm md:text-base whitespace-nowrap">{product.price}</span>
                   </div>
-                  <div className="marquee-rating">
-                    <span className="star">★</span> {product.rating} ({product.reviews} reviews)
+                  <div className="text-xs text-[#8E8E93] mt-2 flex items-center gap-1">
+                    <span className="text-[#ffc107]">★</span> {product.rating} ({product.reviews} reviews)
                   </div>
                 </div>
               </Link>
@@ -447,37 +430,22 @@ function HighlightsSection() {
         )}
 
         {activeTab === "combos" && (
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
-            gap: '2rem',
-            justifyItems: 'center'
-          }}>
+          <div className="flex gap-4 overflow-x-auto pb-8 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
             {posters.map((poster, index) => (
-              <Link to="/menu" key={index} style={{ width: '100%', maxWidth: '350px' }}>
+              <Link to="/menu" key={index} className="min-w-[280px] md:min-w-[350px] flex-shrink-0 snap-start">
                 <img 
                   src={poster} 
                   alt={`Special Combo Offer ${index}`} 
-                  style={{ width: '100%', height: 'auto', borderRadius: '1rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                  className="w-full h-auto rounded-2xl shadow-sm hover:shadow-md transition-shadow object-cover"
                 />
               </Link>
             ))}
           </div>
         )}
 
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '3rem' }}>
-          <Link to="/menu" style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '1rem 2rem',
-            backgroundColor: '#D32F2F',
-            color: 'white',
-            fontWeight: 'bold',
-            borderRadius: '9999px',
-            textDecoration: 'none',
-            boxShadow: '0 4px 6px -1px rgba(211, 47, 47, 0.4)'
-          }}>
+        {/* Small See Full Menu Button */}
+        <div className="flex justify-center mt-6">
+          <Link to="/menu" className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#D32F2F] text-white text-sm font-bold rounded-full shadow-sm hover:bg-[#b72424] transition-colors whitespace-nowrap">
             See Full Menu <Arrow />
           </Link>
         </div>
