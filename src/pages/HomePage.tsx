@@ -56,9 +56,22 @@ function BurgerStory() {
         const response = await fetch(url)
         const blob = await response.blob()
         
-        let bmp: ImageBitmap | HTMLImageElement
+        let bmp: ImageBitmap | HTMLCanvasElement | HTMLImageElement
         if ("createImageBitmap" in window) {
-          bmp = await createImageBitmap(blob)
+          const img = await createImageBitmap(blob)
+          const isMobile = window.innerWidth < 768
+          // Safari doesn't support resizeWidth in createImageBitmap reliably, so we manually downscale using a small temporary canvas to save ~700MB of RAM on mobile!
+          if (isMobile && img.width > 800) {
+            const scaleCanvas = document.createElement("canvas")
+            scaleCanvas.width = 800
+            scaleCanvas.height = (800 / img.width) * img.height
+            const sCtx = scaleCanvas.getContext("2d", { alpha: false })
+            sCtx?.drawImage(img, 0, 0, scaleCanvas.width, scaleCanvas.height)
+            bmp = scaleCanvas
+            img.close()
+          } else {
+            bmp = img
+          }
         } else {
           bmp = await new Promise<HTMLImageElement>((res, rej) => {
             const img = new Image()
@@ -139,9 +152,9 @@ function BurgerStory() {
 
     const cw = canvas.width
     const ch = canvas.height
-    // ImageBitmap uses .width and .height instead of naturalWidth
-    const imgW = img.width
-    const imgH = img.height
+    // ImageBitmap/HTMLCanvasElement use .width/.height. HTMLImageElement uses naturalWidth/naturalHeight safely.
+    const imgW = img.width || (img as HTMLImageElement).naturalWidth || 1920
+    const imgH = img.height || (img as HTMLImageElement).naturalHeight || 1080
     const imgRatio = imgW / imgH
     const canvasRatio = cw / ch
 
