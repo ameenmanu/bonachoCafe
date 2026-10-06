@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "git config lfs.url https://github.com/ameenmanu/bonachoCafe.git/info/lfs && git lfs pull && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "format": "oxfmt"
   },
