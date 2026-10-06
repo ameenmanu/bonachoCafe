@@ -128,6 +128,9 @@ export function MenuPage() {
   const [activeCategoryId, setActiveCategoryId] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [showTopRated, setShowTopRated] = useState(false);
+  const [wishlist, setWishlist] = useState<number[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
   // We use the first product's image as the category icon
   const categoriesList = menuData.map(cat => ({
@@ -144,18 +147,36 @@ export function MenuPage() {
     return matchesSearch && matchesRating;
   });
 
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const paginatedProducts = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  // Reset to page 1 on filter change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeCategoryId, searchQuery, showTopRated]);
+
+  const toggleWishlist = (id: number) => {
+    setWishlist(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  };
+
   return (
-    <div className="min-h-screen bg-[#F8F9FA] pb-24 pt-8 px-4 md:px-8 font-sans">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-white pb-24 pt-8 px-4 md:px-8 font-sans relative overflow-hidden">
+      {/* Curved Background Shape */}
+      <div 
+        className="absolute top-[180px] left-1/2 -translate-x-1/2 w-[150vw] md:w-[120vw] h-[200vh] bg-[#F5F6F8] rounded-t-[50%] md:rounded-t-[100%] z-0" 
+        style={{ pointerEvents: 'none' }}
+      ></div>
+
+      <div className="max-w-4xl mx-auto relative z-10">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-[#1A1A1A] tracking-tight">
-            Hungry? <span className="font-normal text-[#8E8E93]">Order & Eat.</span>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-[#1A1A1A] tracking-tighter">
+            Hungry? <span className="font-medium text-[#8E8E93]">Order & Eat.</span>
           </h1>
         </div>
 
         {/* Search & Filter Row */}
-        <div className="flex items-center gap-3 mb-8">
+        <div className="flex items-center gap-3 mb-10">
           <div className="relative flex-1">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -165,19 +186,19 @@ export function MenuPage() {
               placeholder="Search for fast food..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-3.5 bg-white rounded-full text-sm font-medium text-[#1A1A1A] placeholder-[#8E8E93] shadow-sm outline-none focus:ring-2 focus:ring-[#1A1A1A]/10 transition-all"
+              className="w-full pl-12 pr-4 py-4 bg-white rounded-full text-sm font-medium text-[#1A1A1A] placeholder-[#8E8E93] shadow-sm outline-none focus:ring-2 focus:ring-[#1A1A1A]/10 transition-all border border-gray-100"
             />
           </div>
           <button 
             onClick={() => setShowTopRated(!showTopRated)}
-            className={`w-12 h-12 flex-shrink-0 rounded-full flex items-center justify-center shadow-sm transition-colors ${showTopRated ? 'bg-[#D32F2F]' : 'bg-[#1A1A1A]'}`}
+            className={`w-14 h-14 flex-shrink-0 rounded-full flex items-center justify-center shadow-sm transition-colors ${showTopRated ? 'bg-[#D32F2F]' : 'bg-[#1A1A1A]'}`}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
           </button>
         </div>
 
         {/* Categories (Horizontal Scroll) */}
-        <div className="flex gap-4 overflow-x-auto pb-6 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+        <div className="flex gap-4 overflow-x-auto pb-8 pt-4 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
           {categoriesList.map(cat => (
             <button
               key={cat.id}
@@ -200,9 +221,9 @@ export function MenuPage() {
         </div>
 
         {/* Product Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-2 min-h-[400px]">
           <AnimatePresence mode="popLayout">
-            {filteredProducts.length === 0 ? (
+            {paginatedProducts.length === 0 ? (
               <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -212,7 +233,7 @@ export function MenuPage() {
                 <p className="text-[#8E8E93] font-medium">No items found.</p>
               </motion.div>
             ) : (
-              filteredProducts.map((product) => (
+              paginatedProducts.map((product) => (
                 <motion.div
                   key={product.id}
                   layout
@@ -220,10 +241,18 @@ export function MenuPage() {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.2 }}
-                  className="bg-white rounded-[1.5rem] p-4 flex flex-col items-center shadow-sm relative"
+                  className="bg-white rounded-[1.5rem] p-4 flex flex-col items-center shadow-sm hover:shadow-md transition-shadow relative"
                 >
+                  {/* Wishlist Button */}
+                  <button 
+                    onClick={() => toggleWishlist(product.id)}
+                    className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center shadow-sm text-[#8E8E93] hover:text-[#D32F2F] transition-colors"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill={wishlist.includes(product.id) ? "#D32F2F" : "none"} stroke={wishlist.includes(product.id) ? "#D32F2F" : "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                  </button>
+
                   {/* Image */}
-                  <div className="w-full h-32 mb-4 flex items-center justify-center">
+                  <div className="w-full h-32 mb-4 flex items-center justify-center mt-2">
                     <img 
                       src={product.image} 
                       alt={product.name} 
@@ -255,6 +284,35 @@ export function MenuPage() {
             )}
           </AnimatePresence>
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-10">
+            <button 
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-sm disabled:opacity-50 transition-opacity text-[#1A1A1A]"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <div className="flex items-center gap-2 mx-4">
+              {Array.from({ length: totalPages }).map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentPage(i + 1)}
+                  className={`w-2.5 h-2.5 rounded-full transition-colors ${currentPage === i + 1 ? 'bg-[#1A1A1A]' : 'bg-[#D1D1D6]'}`}
+                />
+              ))}
+            </div>
+            <button 
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-sm disabled:opacity-50 transition-opacity text-[#1A1A1A]"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </div>
+        )}
 
       </div>
     </div>
