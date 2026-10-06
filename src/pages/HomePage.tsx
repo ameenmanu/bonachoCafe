@@ -431,13 +431,27 @@ function HighlightsSection() {
 
         {activeTab === "combos" && (
           <div className="flex gap-4 overflow-x-auto pb-8 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
-            {posters.map((poster, index) => (
-              <Link to="/menu" key={index} className="min-w-[280px] md:min-w-[350px] flex-shrink-0 snap-start">
-                <img 
-                  src={poster} 
-                  alt={`Special Combo Offer ${index}`} 
-                  className="w-full h-auto rounded-2xl shadow-sm hover:shadow-md transition-shadow object-cover"
-                />
+            {[TopProducts[1], TopProducts[4], TopProducts[2]].map((product, i) => (
+              <Link 
+                to="/menu" 
+                key={`combo-${product.id}-${i}`} 
+                className="bg-white rounded-2xl p-4 shadow-sm min-w-[200px] md:min-w-[240px] flex-shrink-0 snap-start hover:shadow-md transition-shadow"
+              >
+                <div className="w-full h-32 md:h-40 flex items-center justify-center mb-4 relative">
+                  <div className="absolute top-0 right-0 bg-[#D32F2F] text-white text-[10px] font-bold px-2 py-1 rounded-full z-10">
+                    Combo
+                  </div>
+                  <img src={product.img} alt={product.name} className="w-full h-full object-contain hover:scale-105 transition-transform" />
+                </div>
+                <div>
+                  <div className="flex justify-between items-start gap-2">
+                    <h3 className="font-bold text-[#1A1A1A] text-sm md:text-base leading-tight flex-1">{product.name} Combo</h3>
+                    <span className="font-bold text-[#D32F2F] text-sm md:text-base whitespace-nowrap">{product.price}</span>
+                  </div>
+                  <div className="text-xs text-[#8E8E93] mt-2 flex items-center gap-1">
+                    <span className="text-[#ffc107]">★</span> {product.rating} ({product.reviews} reviews)
+                  </div>
+                </div>
               </Link>
             ))}
           </div>

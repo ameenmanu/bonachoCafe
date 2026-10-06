@@ -10,7 +10,7 @@ const baseMenuData = [
     bgColor: "#D32F2F", // Red theme for offers
     description: "UNBEATABLE DAILY COMBO OFFERS FOR CRAVINGS.",
     products: [
-      { id: 991, name: "Burger Combo", price: "$9.99", image: "/assets/burger.png" },
+      { id: 991, name: "Burger Combo", price: "$9.99", image: "/assets/burger-hero.png" },
       { id: 992, name: "Chicken Bucket", price: "$14.99", image: "/assets/loaded-fries.png" },
       { id: 993, name: "Sweet Treat", price: "$8.50", image: "/assets/strawberry-shake.png" },
     ]
@@ -135,11 +135,11 @@ export function MenuPage() {
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const itemRefs = React.useRef<(HTMLButtonElement | null)[]>([]);
 
-  // We use the first product's image as the category icon
+  // We use specific nice icons for "All" and "Combo Offers", fallback to first product image
   const categoriesList = menuData.map(cat => ({
     id: cat.id,
     name: cat.name,
-    icon: cat.products[0]?.image || "/assets/burger.png"
+    icon: cat.id === 'all' ? '/assets/burger-hero.png' : cat.id === 'combo-offers' ? '/assets/loaded-fries.png' : cat.products[0]?.image || "/assets/burger-cutout.png"
   }));
 
   const activeCategory = menuData.find(c => c.id === activeCategoryId) || menuData[0];
