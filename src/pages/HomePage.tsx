@@ -72,7 +72,9 @@ function BurgerStory() {
   const sizeCanvas = () => {
     const canvas = canvasRef.current
     if (!canvas) return
-    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    // Massive mobile optimization: limit DPR to 1 on phones for 4x faster rendering
+    const isMobile = window.innerWidth < 768
+    const dpr = isMobile ? 1 : Math.min(window.devicePixelRatio || 1, 2)
     canvas.width = window.innerWidth * dpr
     canvas.height = window.innerHeight * dpr
     lastDrawnFrameRef.current = -1
@@ -97,6 +99,11 @@ function BurgerStory() {
     } else {
       dh = ch; dw = ch * imgRatio; ox = (cw - dw) * 0.75; oy = 0
     }
+    
+    // Performance: disable smoothing if downscaling heavily on mobile
+    ctx.imageSmoothingEnabled = true 
+    ctx.imageSmoothingQuality = 'low'
+    
     ctx.fillStyle = "#000"          // must match the frame background
     ctx.fillRect(0, 0, cw, ch)
     ctx.drawImage(img, ox, oy, dw, dh)
@@ -117,7 +124,8 @@ function BurgerStory() {
         start: "top top",
         end: "+=300%",
         pin: true,
-        scrub: true,
+        // Using scrub: 0.5 instead of true adds a tiny bit of momentum, smoothing out finger jitter on mobile
+        scrub: 0.5,
       }
     })
 
