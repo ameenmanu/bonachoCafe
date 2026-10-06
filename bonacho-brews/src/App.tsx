@@ -1,0 +1,455 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React, { useState, useEffect, useMemo } from 'react';
+import { Navbar } from './components/Navbar';
+import { ReviewStats } from './components/ReviewStats';
+import { PopularDrinksFilter } from './components/PopularDrinksFilter';
+import { ReviewCard } from './components/ReviewCard';
+import { PostReviewModal } from './components/PostReviewModal';
+import { PhotoLightbox } from './components/PhotoLightbox';
+import { PhotoWall } from './components/PhotoWall';
+import { Footer } from './components/Footer';
+import { POPULAR_DRINKS, INITIAL_REVIEWS } from './data/mockData';
+import { Review, SortOption } from './types';
+import { Plus, Coffee, Sparkles, Filter, CheckCircle2, ChevronRight } from 'lucide-react';
+
+const STORAGE_KEY = 'cafe_bonacho_reviews_v1';
+const UPVOTES_KEY = 'cafe_bonacho_upvoted_v1';
+
+export default function App() {
+  // Load reviews from localStorage or fallback to initial reviews
+  const [reviews, setReviews] = useState<Review[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch {
+      // Ignore parse errors
+    }
+    return INITIAL_REVIEWS;
+  });
+
+  // Track upvoted review IDs
+  const [upvotedReviews, setUpvotedReviews] = useState<Record<string, boolean>>(() => {
+    try {
+      const saved = localStorage.getItem(UPVOTES_KEY);
+      if (saved) return JSON.parse(saved);
+    } catch {
+      // fallback
+    }
+    return {};
+  });
+
+  // UI state
+  const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
+  const [lightboxData, setLightboxData] = useState<{
+    isOpen: boolean;
+    photoUrl: string;
+    caption?: string;
+    author?: string;
+  }>({
+    isOpen: false,
+    photoUrl: '',
+  });
+
+  // Active section for navigation
+  const [activeSection, setActiveSection] = useState('reviews');
+
+  // Filters & Sorting
+  const [selectedDrinkId, setSelectedDrinkId] = useState<string | null>(null);
+  const [selectedRating, setSelectedRating] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOption, setSortOption] = useState<SortOption>('recent');
+  const [photosOnlyFilter, setPhotosOnlyFilter] = useState(false);
+
+  // Success toast for new reviews
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Persist reviews to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(reviews));
+    } catch {
+      // Ignore storage errors
+    }
+  }, [reviews]);
+
+  // Persist upvotes to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(UPVOTES_KEY, JSON.stringify(upvotedReviews));
+    } catch {
+      // Ignore storage errors
+    }
+  }, [upvotedReviews]);
+
+  // Filter and sort reviews
+  const filteredReviews = useMemo(() => {
+    return reviews
+      .filter((review) => {
+        // Filter by popular drink
+        if (selectedDrinkId && review.drinkId !== selectedDrinkId) {
+          return false;
+        }
+
+        // Filter by star rating
+        if (selectedRating !== null && review.rating !== selectedRating) {
+          return false;
+        }
+
+        // Filter by photos only
+        if (photosOnlyFilter && !review.photoUrl) {
+          return false;
+        }
+
+        // Search query
+        if (searchQuery.trim()) {
+          const query = searchQuery.toLowerCase();
+          const matchAuthor = review.author.toLowerCase().includes(query);
+          const matchComment = review.comment.toLowerCase().includes(query);
+          const matchDrink = review.drinkName.toLowerCase().includes(query);
+          const matchTags = review.tags?.some((t) => t.toLowerCase().includes(query));
+          if (!matchAuthor && !matchComment && !matchDrink && !matchTags) {
+            return false;
+          }
+        }
+
+        return true;
+      })
+      .sort((a, b) => {
+        if (sortOption === 'highest') {
+          return b.rating - a.rating;
+        }
+        if (sortOption === 'lowest') {
+          return a.rating - b.rating;
+        }
+        if (sortOption === 'most_helpful') {
+          return b.helpfulCount - a.helpfulCount;
+        }
+        // Default: 'recent'
+        return 0;
+      });
+  }, [reviews, selectedDrinkId, selectedRating, photosOnlyFilter, searchQuery, sortOption]);
+
+  // Handle new review submission
+  const handleAddNewReview = (
+    newReviewData: Omit<Review, 'id' | 'date' | 'helpfulCount' | 'isVerified'>
+  ) => {
+    const newReview: Review = {
+      ...newReviewData,
+      id: `rev-${Date.now()}`,
+      date: 'Just now',
+      helpfulCount: 0,
+      isVerified: true,
+    };
+
+    setReviews([newReview, ...reviews]);
+    setToastMessage(`Thanks, ${newReview.author}! Your review was published.`);
+    setTimeout(() => setToastMessage(null), 4500);
+
+    // If filtering by a different drink, reset drink filter to show the new review
+    if (selectedDrinkId && selectedDrinkId !== newReview.drinkId) {
+      setSelectedDrinkId(newReview.drinkId);
+    }
+  };
+
+  // Handle upvote
+  const handleUpvoteReview = (reviewId: string) => {
+    const isCurrentlyUpvoted = !!upvotedReviews[reviewId];
+
+    setUpvotedReviews((prev) => ({
+      ...prev,
+      [reviewId]: !isCurrentlyUpvoted,
+    }));
+
+    setReviews((prev) =>
+      prev.map((r) => {
+        if (r.id === reviewId) {
+          return {
+            ...r,
+            helpfulCount: isCurrentlyUpvoted ? r.helpfulCount - 1 : r.helpfulCount + 1,
+          };
+        }
+        return r;
+      })
+    );
+  };
+
+  // Open Lightbox
+  const handleOpenPhotoLightbox = (photoUrl: string, caption?: string, author?: string) => {
+    setLightboxData({
+      isOpen: true,
+      photoUrl,
+      caption,
+      author,
+    });
+  };
+
+  // Section navigation
+  const handleNavigate = (sectionId: string) => {
+    setActiveSection(sectionId);
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#FAF8F5] text-[#2C221B] flex flex-col selection:bg-[#EADBCE]">
+      
+      {/* Top Navigation Bar */}
+      <Navbar
+        onOpenWriteReview={() => setIsWriteModalOpen(true)}
+        activeSection={activeSection}
+        onNavigate={handleNavigate}
+      />
+
+      {/* Main Content Area */}
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-10 sm:space-y-14">
+        
+        {/* Hero Section */}
+        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#2C221B] via-[#382C23] to-[#201813] text-[#FAF8F5] p-6 sm:p-10 lg:p-12 shadow-xl border border-[#48372C]">
+          <div className="relative z-10 max-w-3xl space-y-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FAF8F5]/10 backdrop-blur-md text-[#E6C285] text-xs font-medium">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Artisan Pour Reviews & Community Photos</span>
+            </div>
+
+            <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
+              Sip, rate, and discover your next favorite cup.
+            </h1>
+
+            <p className="text-sm sm:text-base text-[#D4C4B5] leading-relaxed max-w-2xl">
+              Welcome to the Café Bonacho tasting board. Explore unfiltered guest reviews, real photo drops, and find out which signature creations are stealing hearts this week.
+            </p>
+
+            <div className="pt-2 flex flex-wrap items-center gap-3">
+              <button
+                onClick={() => setIsWriteModalOpen(true)}
+                className="py-3 px-5 rounded-xl bg-[#E6C285] hover:bg-[#D4AC68] text-[#2C221B] text-xs sm:text-sm font-semibold transition-all shadow-md active:scale-[0.98] flex items-center gap-2 cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Post Your Drink Photo & Review</span>
+              </button>
+
+              <button
+                onClick={() => handleNavigate('popular')}
+                className="py-3 px-5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs sm:text-sm font-medium transition-colors border border-white/15 flex items-center gap-2 cursor-pointer"
+              >
+                <span>Browse Most Popular Items</span>
+                <ChevronRight className="w-4 h-4 text-[#E6C285]" />
+              </button>
+            </div>
+          </div>
+
+          {/* Decorative subtle background swirl */}
+          <div className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-[#B87C4C]/15 blur-3xl pointer-events-none" />
+        </section>
+
+        {/* Success Toast */}
+        {toastMessage && (
+          <div className="p-4 rounded-2xl bg-[#EFECE6] border border-[#6E8B62] text-[#2C3827] flex items-center gap-3 shadow-md animate-in fade-in slide-in-from-top-2 duration-300">
+            <CheckCircle2 className="w-5 h-5 text-[#4E7541] shrink-0" />
+            <span className="text-xs sm:text-sm font-medium">{toastMessage}</span>
+          </div>
+        )}
+
+        {/* Overall Rating & Breakdown Stats */}
+        <div id="experience">
+          <ReviewStats
+            reviews={reviews}
+            selectedRating={selectedRating}
+            onSelectRating={setSelectedRating}
+            onOpenWriteReview={() => setIsWriteModalOpen(true)}
+          />
+        </div>
+
+        {/* Popular Drinks Filter Section */}
+        <div id="popular">
+          <PopularDrinksFilter
+            popularDrinks={POPULAR_DRINKS}
+            selectedDrinkId={selectedDrinkId}
+            onSelectDrink={setSelectedDrinkId}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            sortOption={sortOption}
+            onSortChange={setSortOption}
+            photosOnlyFilter={photosOnlyFilter}
+            onTogglePhotosOnly={() => setPhotosOnlyFilter(!photosOnlyFilter)}
+            totalReviewCount={reviews.length}
+          />
+        </div>
+
+        {/* Customer Drink Photo Wall */}
+        <div id="photos">
+          <PhotoWall
+            reviews={reviews}
+            onOpenPhotoLightbox={handleOpenPhotoLightbox}
+            onFilterByDrink={(drinkId) => {
+              setSelectedDrinkId(drinkId);
+              const element = document.getElementById('reviews-list');
+              if (element) element.scrollIntoView({ behavior: 'smooth' });
+            }}
+          />
+        </div>
+
+        {/* Reviews Feed Section */}
+        <section id="reviews" className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-[#EADBCE]">
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-serif text-2xl font-bold text-[#2C221B]">
+                  Customer Drink Reviews
+                </h3>
+                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#EFE7DE] text-[#655345] tabular-nums">
+                  {filteredReviews.length}
+                </span>
+              </div>
+
+              {/* Active Filter Indicators */}
+              {(selectedDrinkId || selectedRating !== null || photosOnlyFilter || searchQuery) && (
+                <div className="flex items-center gap-2 flex-wrap text-xs text-[#7B6858] mt-1.5">
+                  <span>Active filters:</span>
+                  {selectedDrinkId && (
+                    <span className="text-[#2C221B] font-medium">
+                      Drink: {POPULAR_DRINKS.find((d) => d.id === selectedDrinkId)?.name || 'Custom'}
+                    </span>
+                  )}
+                  {selectedRating !== null && (
+                    <span className="text-[#2C221B] font-medium">
+                      · {selectedRating} Stars
+                    </span>
+                  )}
+                  {photosOnlyFilter && (
+                    <span className="text-[#2C221B] font-medium">
+                      · Photos only
+                    </span>
+                  )}
+                  {searchQuery && (
+                    <span className="text-[#2C221B] font-medium">
+                      · Keyword: "{searchQuery}"
+                    </span>
+                  )}
+                  <button
+                    onClick={() => {
+                      setSelectedDrinkId(null);
+                      setSelectedRating(null);
+                      setPhotosOnlyFilter(false);
+                      setSearchQuery('');
+                    }}
+                    className="text-[#B87C4C] hover:underline font-semibold ml-1 cursor-pointer"
+                  >
+                    Reset all
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <button
+              onClick={() => setIsWriteModalOpen(true)}
+              className="sm:hidden w-full py-2.5 px-4 rounded-xl bg-[#2C221B] text-white text-xs font-medium flex items-center justify-center gap-2"
+            >
+              <Plus className="w-4 h-4 text-[#E6C285]" />
+              <span>Write a Review</span>
+            </button>
+          </div>
+
+          {/* Review Cards Grid */}
+          <div id="reviews-list">
+            {filteredReviews.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+                {filteredReviews.map((rev) => (
+                  <ReviewCard
+                    key={rev.id}
+                    review={rev}
+                    onOpenPhotoLightbox={handleOpenPhotoLightbox}
+                    onFilterByDrink={(drinkId) => setSelectedDrinkId(drinkId)}
+                    onUpvoteReview={handleUpvoteReview}
+                    isUpvoted={!!upvotedReviews[rev.id]}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16 px-4 bg-white/60 rounded-3xl border border-dashed border-[#DAC7B7] space-y-3">
+                <Coffee className="w-10 h-10 text-[#B87C4C] mx-auto opacity-70" />
+                <h4 className="font-serif text-lg font-bold text-[#2C221B]">
+                  No reviews matching your filters
+                </h4>
+                <p className="text-xs text-[#7B6858] max-w-sm mx-auto">
+                  Try loosening your filter parameters, searching for a different roast note, or be the first to post a review for this drink!
+                </p>
+                <div className="pt-2 flex items-center justify-center gap-3">
+                  <button
+                    onClick={() => {
+                      setSelectedDrinkId(null);
+                      setSelectedRating(null);
+                      setPhotosOnlyFilter(false);
+                      setSearchQuery('');
+                    }}
+                    className="py-2 px-4 rounded-xl bg-[#FAF8F5] border border-[#E0D3C5] text-xs font-medium text-[#4A3A2F] hover:bg-[#EFE7DE] cursor-pointer"
+                  >
+                    Clear All Filters
+                  </button>
+                  <button
+                    onClick={() => setIsWriteModalOpen(true)}
+                    className="py-2 px-4 rounded-xl bg-[#2C221B] text-[#FAF8F5] text-xs font-medium hover:bg-[#43342A] cursor-pointer"
+                  >
+                    Post First Review
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+
+      </main>
+
+      {/* Floating Bottom Sticky Bar on Mobile (Ergonomic thumb zone, < 15% viewport height) */}
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-30 p-3 bg-[#FAF8F5]/95 backdrop-blur-md border-t border-[#E8DEC8] flex items-center gap-2">
+        <button
+          onClick={() => {
+            const el = document.getElementById('popular');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }}
+          className="flex-1 py-2.5 px-3 rounded-xl bg-[#F2ECE4] text-[#4A3A2F] text-xs font-medium flex items-center justify-center gap-1.5 border border-[#E0D3C5]"
+        >
+          <Filter className="w-3.5 h-3.5 text-[#B87C4C]" />
+          <span>Filter Drinks</span>
+        </button>
+        <button
+          onClick={() => setIsWriteModalOpen(true)}
+          className="flex-1 py-2.5 px-3 rounded-xl bg-[#2C221B] text-[#FAF8F5] text-xs font-medium flex items-center justify-center gap-1.5 shadow-md active:scale-98"
+        >
+          <Plus className="w-3.5 h-3.5 text-[#E6C285]" />
+          <span>Post Review</span>
+        </button>
+      </div>
+
+      {/* Write Review Modal */}
+      <PostReviewModal
+        isOpen={isWriteModalOpen}
+        onClose={() => setIsWriteModalOpen(false)}
+        onSubmit={handleAddNewReview}
+        popularDrinks={POPULAR_DRINKS}
+        defaultDrinkId={selectedDrinkId}
+      />
+
+      {/* Fullscreen Photo Lightbox */}
+      <PhotoLightbox
+        isOpen={lightboxData.isOpen}
+        onClose={() => setLightboxData({ ...lightboxData, isOpen: false })}
+        photoUrl={lightboxData.photoUrl}
+        caption={lightboxData.caption}
+        author={lightboxData.author}
+      />
+
+      {/* Footer */}
+      <Footer />
+
+    </div>
+  );
+}

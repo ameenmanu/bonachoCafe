@@ -1,0 +1,10 @@
+{
+  "description": "Engaging animated cafe website showcasing a burger that explodes to reveal menu, story, and shop details with smooth scroll-triggered animations and mobile-friendly navigation.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
