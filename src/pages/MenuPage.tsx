@@ -125,227 +125,136 @@ const menuData = [
 ];
 
 export function MenuPage() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [direction, setDirection] = useState(0);
+  const [activeCategoryId, setActiveCategoryId] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [showTopRated, setShowTopRated] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
 
-  const handleNext = () => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-    setDirection(1);
-    setCurrentIndex((prev) => (prev + 1) % menuData.length);
-  };
+  // We use the first product's image as the category icon
+  const categoriesList = menuData.map(cat => ({
+    id: cat.id,
+    name: cat.name,
+    icon: cat.products[0]?.image || "/assets/burger.png"
+  }));
 
-  const handlePrev = () => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-    setDirection(-1);
-    setCurrentIndex((prev) => (prev - 1 + menuData.length) % menuData.length);
-  };
+  const activeCategory = menuData.find(c => c.id === activeCategoryId) || menuData[0];
 
-  const handleCategoryClick = (index: number) => {
-    if (isAnimating || index === currentIndex) return;
-    setIsAnimating(true);
-    setDirection(index > currentIndex ? 1 : -1);
-    setCurrentIndex(index);
-  }
-
-
-
-  const category = menuData[currentIndex];
-
-  const slideVariants = {
-    enter: (dir: number) => ({
-      x: dir > 0 ? "100%" : "-100%",
-      opacity: 0,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-    },
-    exit: (dir: number) => ({
-      x: dir < 0 ? "100%" : "-100%",
-      opacity: 0,
-    }),
-  };
+  const filteredProducts = activeCategory.products.filter(p => {
+    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesRating = showTopRated ? parseFloat(p.rating) >= 4.7 : true;
+    return matchesSearch && matchesRating;
+  });
 
   return (
-    <div className="menu-container" style={{ backgroundColor: category.bgColor, transition: "background-color 0.6s ease" }}>
+    <div className="min-h-screen bg-[#F8F9FA] pb-24 pt-8 px-4 md:px-8 font-sans">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-[#1A1A1A] tracking-tight">
+            Hungry? <span className="font-normal text-[#8E8E93]">Order & Eat.</span>
+          </h1>
+        </div>
 
-      {/* Mobile Top Bar (Categories & Search) */}
-      <div className="menu-mobile-top">
-        <div></div>
-        <div className="menu-search-bar">
-          <input
-            type="text"
-            placeholder="Search our menu..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+        {/* Search & Filter Row */}
+        <div className="flex items-center gap-3 mb-8">
+          <div className="relative flex-1">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Search for fast food..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-12 pr-4 py-3.5 bg-white rounded-full text-sm font-medium text-[#1A1A1A] placeholder-[#8E8E93] shadow-sm outline-none focus:ring-2 focus:ring-[#1A1A1A]/10 transition-all"
+            />
+          </div>
           <button 
-            className="filter-btn" 
-            aria-label="Filter Top Rated"
             onClick={() => setShowTopRated(!showTopRated)}
-            style={{ 
-              backgroundColor: showTopRated ? '#D32F2F' : 'transparent',
-              color: showTopRated ? 'white' : 'currentColor',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.5rem 1rem',
-              borderRadius: '9999px',
-              border: '1px solid #D32F2F',
-              fontSize: '0.9rem',
-              fontWeight: 'bold',
-              whiteSpace: 'nowrap'
-            }}
+            className={`w-12 h-12 flex-shrink-0 rounded-full flex items-center justify-center shadow-sm transition-colors ${showTopRated ? 'bg-[#D32F2F]' : 'bg-[#1A1A1A]'}`}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill={showTopRated ? "white" : "currentColor"} stroke={showTopRated ? "white" : "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-            </svg>
-            {showTopRated ? "Top Rated Only" : "Filter Top Rated"}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
           </button>
         </div>
-        <div className="menu-categories-horizontal">
-          {menuData.map((cat, i) => (
+
+        {/* Categories (Horizontal Scroll) */}
+        <div className="flex gap-4 overflow-x-auto pb-6 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+          {categoriesList.map(cat => (
             <button
               key={cat.id}
-              className={i === currentIndex ? "active" : ""}
-              onClick={() => handleCategoryClick(i)}
+              onClick={() => setActiveCategoryId(cat.id)}
+              className="flex flex-col items-center gap-2 min-w-[72px]"
             >
-              {cat.name}
+              <div className={`w-16 h-16 rounded-full flex items-center justify-center bg-white shadow-sm p-3 transition-transform ${activeCategoryId === cat.id ? 'scale-110 shadow-md ring-2 ring-offset-2 ring-[#1A1A1A]' : ''}`}>
+                <img src={cat.icon} alt={cat.name} className="w-full h-full object-contain" />
+              </div>
+              <div className="flex flex-col items-center">
+                <span className={`text-xs font-semibold mt-1 transition-colors ${activeCategoryId === cat.id ? 'text-[#1A1A1A]' : 'text-[#8E8E93]'}`}>
+                  {cat.name}
+                </span>
+                {activeCategoryId === cat.id && (
+                  <div className="w-5 h-0.5 bg-[#1A1A1A] rounded-full mt-1"></div>
+                )}
+              </div>
             </button>
           ))}
         </div>
-      </div>
 
-      {/* Combo Hero Carousel Removed as requested */}
-
-      <div className="menu-layout">
-
-        {/* Main Carousel Area */}
-        <div className="menu-carousel-card">
-          <div className="card-inner">
-
-            {/* Fixed Navbar inside card */}
-            {/* <header className="card-header">
-              <div className="brand-logo">
-                <img src="/assets/logo1.png" alt="Logo" style={{ width: '40px' }} />
-              </div>
-              <nav className="card-nav">
-                <a href="#" className="active">HOME</a>
-                <a href="#">FLAVOUR</a>
-                <a href="#">ALL PRODUCT</a>
-                <a href="#">ABOUT</a>
-                <a href="#">CONTACT</a>
-              </nav>
-              {/* Cart & Order Now removed per user request */}
-            {/* </header> */}
-
-            {/* Sliding Content */}
-            <div className="carousel-view relative">
-              <button 
-                onClick={handlePrev} 
-                className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-30 w-10 sm:w-12 h-10 sm:h-12 flex items-center justify-center bg-white/70 hover:bg-white rounded-full shadow-lg backdrop-blur-sm transition-all text-[#2C221B] hover:scale-110"
-                aria-label="Previous Category"
+        {/* Product Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+          <AnimatePresence mode="popLayout">
+            {filteredProducts.length === 0 ? (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="col-span-full py-12 text-center"
               >
-                <ChevronLeft className="w-6 h-6" />
-              </button>
-              
-              <button 
-                onClick={handleNext} 
-                className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-30 w-10 sm:w-12 h-10 sm:h-12 flex items-center justify-center bg-white/70 hover:bg-white rounded-full shadow-lg backdrop-blur-sm transition-all text-[#2C221B] hover:scale-110"
-                aria-label="Next Category"
-              >
-                <ChevronRight className="w-6 h-6" />
-              </button>
-
-              <AnimatePresence
-                initial={false}
-                custom={direction}
-                onExitComplete={() => setIsAnimating(false)}
-              >
+                <p className="text-[#8E8E93] font-medium">No items found.</p>
+              </motion.div>
+            ) : (
+              filteredProducts.map((product) => (
                 <motion.div
-                  key={currentIndex}
-                  custom={direction}
-                  variants={slideVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
-                  className="carousel-slide-grid"
+                  key={product.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.2 }}
+                  className="bg-white rounded-[1.5rem] p-4 flex flex-col items-center shadow-sm relative"
                 >
-                  <div className="products-grid">
-                    {(() => {
-                      const filteredProducts = category.products.filter(p => {
-                        const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
-                        const matchesRating = showTopRated ? parseFloat(p.rating) >= 4.7 : true;
-                        return matchesSearch && matchesRating;
-                      });
+                  {/* Image */}
+                  <div className="w-full h-32 mb-4 flex items-center justify-center">
+                    <img 
+                      src={product.image} 
+                      alt={product.name} 
+                      className="max-w-[120%] max-h-[120%] object-contain drop-shadow-md hover:scale-110 transition-transform duration-300"
+                    />
+                  </div>
+                  
+                  {/* Discount Pill */}
+                  <div className="bg-[#1A1A1A] text-white text-[0.65rem] font-bold px-3 py-1 rounded-full mb-3">
+                    -{(product.id % 30) + 10}%
+                  </div>
 
-                      if (filteredProducts.length === 0) {
-                        return (
-                          <div style={{ padding: '2rem', textAlign: 'center', width: '100%', gridColumn: '1 / -1' }}>
-                            <p style={{ fontSize: '1.2rem', color: '#17352a', fontWeight: 'bold' }}>
-                              No items found.
-                            </p>
-                            <p style={{ fontSize: '0.9rem', color: '#6b776f' }}>
-                              Try searching for something else!
-                            </p>
-                          </div>
-                        );
-                      }
+                  {/* Title & Desc */}
+                  <h3 className="text-[#1A1A1A] font-bold text-sm text-center line-clamp-1 w-full">{product.name}</h3>
+                  <p className="text-[#8E8E93] text-[0.65rem] mt-1 mb-4 text-center line-clamp-1">With Spicy Sauce</p>
 
-                      return filteredProducts.map(p => (
-                        <motion.div 
-                          key={p.id} 
-                          className="product-item"
-                          whileHover={{ scale: 1.05, y: -5 }}
-                          whileTap={{ scale: 0.95 }}
-                          transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                        >
-                          <img src={p.image} alt={p.name} />
-                          <h4>{p.name}</h4>
-                          <span style={{ fontSize: '0.8rem', color: '#ffc107', margin: '0.2rem 0' }}>★ {p.rating} ({p.reviews})</span>
-                          <span>{p.price}</span>
-                        </motion.div>
-                      ));
-                    })()}
+                  {/* Price & Add Button */}
+                  <div className="flex items-center justify-between w-full mt-auto pt-2">
+                    <div className="flex items-baseline gap-0.5">
+                      <span className="text-[#F26A2E] text-xs font-bold">$</span>
+                      <span className="text-[#1A1A1A] text-lg font-extrabold">{product.price.replace('$', '')}</span>
+                    </div>
+                    <button className="w-8 h-8 rounded-full bg-[#1A1A1A] flex items-center justify-center text-white hover:bg-[#F26A2E] transition-colors shadow-md">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </button>
                   </div>
                 </motion.div>
-              </AnimatePresence>
-            </div>
-
-
-          </div>
+              ))
+            )}
+          </AnimatePresence>
         </div>
-
-        {/* Desktop Sidebar (Categories) */}
-        <aside className="menu-sidebar">
-          <div className="menu-search-bar">
-            <input
-              type="text"
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <h3>Categories</h3>
-          <ul className="category-list">
-            {menuData.map((cat, i) => (
-              <li key={cat.id}>
-                <button
-                  className={i === currentIndex ? "active" : ""}
-                  onClick={() => handleCategoryClick(i)}
-                >
-                  {cat.name}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </aside>
 
       </div>
     </div>
