@@ -368,69 +368,102 @@ const TopProducts = [
   { id: 5, name: "Classic Zinger Burger", rating: "4.9", reviews: 302, img: "/assets/burger-hero.png", price: "$12.00" },
 ]
 
-function TopProductsMarquee() {
-  const repeatedProducts = [...TopProducts, ...TopProducts]
-  return (
-    <section className="marquee-section">
-      <div className="marquee-heading text-center mb-6">
-        <p className="eyebrow">Crowd Favorites</p>
-        <h2 style={{ fontFamily: '"Fraunces", serif', fontSize: '2.5rem', color: 'var(--ink)', marginBottom: '0.5rem' }}>Highly Reviewed</h2>
-        <p style={{ color: '#D32F2F', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.9rem', letterSpacing: '0.05em' }}>Top Reviewed Items</p>
-      </div>
-      <div className="marquee-wrapper">
-        <div className="marquee-track">
-          {repeatedProducts.map((product, i) => (
-            <Link to="/reviews" key={`${product.id}-${i}`} className="marquee-card">
-              <img src={product.img} alt={product.name} className="marquee-img" />
-              <div className="marquee-content">
-                <div className="marquee-title-row">
-                  <h3 className="marquee-name">{product.name}</h3>
-                  <span className="marquee-price">{product.price}</span>
-                </div>
-                <div className="marquee-rating">
-                  <span className="star">★</span> {product.rating} ({product.reviews} reviews)
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
+function HighlightsSection() {
+  const [activeTab, setActiveTab] = useState<"combos" | "topRated">("topRated");
 
-function ComboOffersSection() {
-  // Use the exact poster images provided by the user
   const posters = [
     "/assets/8e6b2cc96c5071111c8003d92603189b.jpg",
     "/assets/7c73847210101b7ec1b57148ed1cfe74.jpg",
-    "/assets/8e6b2cc96c5071111c8003d92603189b.jpg" // Note: Re-using image as requested by user
   ];
 
-  // Duplicate for seamless loop
-  const repeatedPosters = [...posters, ...posters, ...posters, ...posters];
+  const topRated = TopProducts.slice(0, 4);
 
   return (
-    <section className="bg-[#FAF8F5] py-20 w-full overflow-hidden relative z-20 border-b border-[#EADBCE]">
+    <section className="bg-[#FAF8F5] py-20 w-full relative z-20 border-b border-[#EADBCE]">
       <div className="text-center mb-10 px-6">
-        <p className="text-[#2C221B] font-bold uppercase tracking-wider text-sm mb-2">Today's Special</p>
+        <p className="text-[#2C221B] font-bold uppercase tracking-wider text-sm mb-2">Our Highlights</p>
         <h2 className="font-serif text-4xl md:text-5xl font-extrabold text-[#D32F2F] leading-tight" style={{ fontFamily: '"Fraunces", serif' }}>
-          Unbeatable Combo Offers
+          Discover the Best
         </h2>
+        
+        {/* Tabs */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '2rem' }}>
+          <button 
+            onClick={() => setActiveTab("topRated")}
+            style={{
+              padding: '0.75rem 1.5rem',
+              borderRadius: '9999px',
+              border: activeTab === "topRated" ? 'none' : '1px solid #D32F2F',
+              backgroundColor: activeTab === "topRated" ? '#D32F2F' : 'transparent',
+              color: activeTab === "topRated" ? 'white' : '#D32F2F',
+              fontWeight: 700,
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            Highly Reviewed
+          </button>
+          <button 
+            onClick={() => setActiveTab("combos")}
+            style={{
+              padding: '0.75rem 1.5rem',
+              borderRadius: '9999px',
+              border: activeTab === "combos" ? 'none' : '1px solid #D32F2F',
+              backgroundColor: activeTab === "combos" ? '#D32F2F' : 'transparent',
+              color: activeTab === "combos" ? 'white' : '#D32F2F',
+              fontWeight: 700,
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            Today's Combos
+          </button>
+        </div>
       </div>
 
-      <div className="marquee-wrapper-reverse">
-        <div className="marquee-track-reverse" style={{ gap: '2rem' }}>
-          {repeatedPosters.map((poster, index) => (
-            <Link to="/menu" key={index} className="shrink-0 block">
-              <img 
-                src={poster} 
-                alt={`Special Combo Offer ${index}`} 
-                className="w-[260px] h-[280px] object-contain rounded-xl shadow-sm hover:-translate-y-1 transition-transform duration-300"
-              />
-            </Link>
-          ))}
-        </div>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1rem' }}>
+        {activeTab === "topRated" && (
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+            gap: '2rem',
+            justifyItems: 'center'
+          }}>
+            {topRated.map((product, i) => (
+              <Link to="/menu" key={`${product.id}-${i}`} className="marquee-card" style={{ width: '100%', maxWidth: '300px', margin: 0 }}>
+                <img src={product.img} alt={product.name} className="marquee-img" />
+                <div className="marquee-content">
+                  <div className="marquee-title-row">
+                    <h3 className="marquee-name">{product.name}</h3>
+                    <span className="marquee-price">{product.price}</span>
+                  </div>
+                  <div className="marquee-rating">
+                    <span className="star">★</span> {product.rating} ({product.reviews} reviews)
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+
+        {activeTab === "combos" && (
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+            gap: '2rem',
+            justifyItems: 'center'
+          }}>
+            {posters.map((poster, index) => (
+              <Link to="/menu" key={index} style={{ width: '100%', maxWidth: '350px' }}>
+                <img 
+                  src={poster} 
+                  alt={`Special Combo Offer ${index}`} 
+                  style={{ width: '100%', height: 'auto', borderRadius: '1rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                />
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   )
@@ -440,9 +473,8 @@ export function HomePage() {
   return (
     <>
       <BurgerStory />
-      <ComboOffersSection />
       <FriesChapter />
-      <TopProductsMarquee />
+      <HighlightsSection />
 
       <section className="drinks-section">
         <div className="drinks-heading">
