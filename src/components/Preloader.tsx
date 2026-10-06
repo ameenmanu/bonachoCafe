@@ -8,11 +8,23 @@ export default function Preloader() {
   useEffect(() => {
     let currentProgress = 0
     let targetProgress = 0
+    const isHomePage = window.location.pathname === "/"
+    let isBurgerLoaded = false
+
+    const handleBurgerLoaded = () => {
+      isBurgerLoaded = true
+    }
+    
+    if (isHomePage) {
+      window.addEventListener("burger-frames-loaded", handleBurgerLoaded)
+    }
 
     // Simulate loading progress
     const updateProgress = () => {
-      // If window is loaded, jump to 100
-      if (document.readyState === "complete" && targetProgress < 100) {
+      const isReadyToComplete = document.readyState === "complete" && (!isHomePage || isBurgerLoaded)
+
+      // If window and assets are loaded, jump to 100
+      if (isReadyToComplete && targetProgress < 100) {
         targetProgress = 100
       } else if (targetProgress < 90) {
         // Otherwise slowly approach 90%
@@ -35,16 +47,18 @@ export default function Preloader() {
     // Start progress
     requestAnimationFrame(updateProgress)
 
-    // Ensure it eventually completes even if 'load' event doesn't fire nicely
+    // Ensure it eventually completes even if 'load' event doesn't fire nicely (extended timeout for frames)
     const fallbackTimer = setTimeout(() => {
       targetProgress = 100
-    }, 5000)
+    }, 15000)
 
     const handleLoad = () => {
-      targetProgress = 100
+      if (!isHomePage || isBurgerLoaded) {
+        targetProgress = 100
+      }
     }
 
-    if (document.readyState === "complete") {
+    if (document.readyState === "complete" && (!isHomePage || isBurgerLoaded)) {
       targetProgress = 100
     } else {
       window.addEventListener("load", handleLoad)
@@ -52,6 +66,7 @@ export default function Preloader() {
 
     return () => {
       window.removeEventListener("load", handleLoad)
+      window.removeEventListener("burger-frames-loaded", handleBurgerLoaded)
       clearTimeout(fallbackTimer)
     }
   }, [])

@@ -197,8 +197,7 @@ export function MenuPage() {
         </div>
       </div>
 
-      {/* Combo Hero Carousel */}
-      <ComboHeroCarousel />
+      {/* Combo Hero Carousel Removed as requested */}
 
       <div className="menu-layout">
 
@@ -331,29 +330,3 @@ export function MenuPage() {
   );
 }
 
-function ComboHeroCarousel() {
-  const posters = [
-    "/assets/8e6b2cc96c5071111c8003d92603189b.jpg",
-    "/assets/7c73847210101b7ec1b57148ed1cfe74.jpg",
-    "/assets/8e6b2cc96c5071111c8003d92603189b.jpg"
-  ];
-
-  const repeatedPosters = [...posters, ...posters, ...posters, ...posters];
-
-  return (
-    <div className="w-full mb-8 overflow-hidden rounded-2xl relative shrink-0">
-      <div className="marquee-wrapper-reverse">
-        <div className="marquee-track-reverse" style={{ gap: '2rem' }}>
-          {repeatedPosters.map((poster, index) => (
-            <img 
-              key={index} 
-              src={poster} 
-              alt={`Special Combo Offer ${index}`} 
-              className="w-[180px] md:w-[260px] h-[220px] md:h-[320px] object-contain rounded-xl shadow-sm shrink-0 hover:-translate-y-1 transition-transform duration-300"
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}

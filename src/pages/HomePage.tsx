@@ -44,9 +44,19 @@ function BurgerStory() {
         imagesRef.current[0] = firstImg
         drawFrame(playheadRef.current.frame)
         
+        let loadedCount = 1;
+        const checkDone = () => {
+          loadedCount++;
+          if (loadedCount === frameCount) {
+            window.dispatchEvent(new Event('burger-frames-loaded'));
+          }
+        }
+
         // Progressively load the rest of the sequence in the background
         for (let i = 1; i < frameCount; i++) {
           const img = new Image()
+          img.onload = checkDone
+          img.onerror = checkDone
           img.src = `/frames/ezgif-frame-${String(i + 1).padStart(3, "0")}.jpg`
           imagesRef.current[i] = img
         }
