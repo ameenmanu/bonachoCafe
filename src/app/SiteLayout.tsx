@@ -5,7 +5,7 @@ import Lenis from "lenis"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { Navbar } from "../components/Navbar"
-
+import Preloader from "../components/Preloader"
 const navItems = [
   { 
     label: "Menu", 
@@ -50,6 +50,7 @@ export function SiteLayout() {
 
   return (
     <div className="site-shell">
+      <Preloader />
       <Navbar />
 
       <AnimatePresence mode="wait">
