@@ -133,8 +133,7 @@ export function MenuPage() {
   const itemsPerPage = 6;
 
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
-  const [scrollLeft, setScrollLeft] = useState(0);
-  const [containerWidth, setContainerWidth] = useState(0);
+  const itemRefs = React.useRef<(HTMLButtonElement | null)[]>([]);
 
   // We use the first product's image as the category icon
   const categoriesList = menuData.map(cat => ({
@@ -159,40 +158,43 @@ export function MenuPage() {
     setCurrentPage(1);
   }, [activeCategoryId, searchQuery, showTopRated]);
 
-  // Responsive curve calculations
+  // Robust responsive curve calculations using exact DOM rects
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
     
-    const handleScroll = () => setScrollLeft(container.scrollLeft);
-    const handleResize = () => setContainerWidth(container.offsetWidth);
+    const updateCurve = () => {
+      const viewportCenter = window.innerWidth / 2;
+      
+      itemRefs.current.forEach((item) => {
+        if (!item) return;
+        const rect = item.getBoundingClientRect();
+        const itemCenter = rect.left + rect.width / 2;
+        const dist = Math.abs(itemCenter - viewportCenter);
+        
+        // Scale curve for mobile vs desktop
+        const scale = window.innerWidth < 600 ? 50 : 80;
+        
+        // Calculate Y offset (farther from center = lower down)
+        const translateY = Math.pow(dist / scale, 2) * 3;
+        
+        // Limit max downward curve so it doesn't break layout
+        const boundedY = Math.min(translateY, 80);
+        
+        item.style.transform = `translateY(${boundedY}px)`;
+      });
+    };
     
-    handleResize();
+    updateCurve();
     
-    container.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", handleResize);
+    container.addEventListener("scroll", updateCurve, { passive: true });
+    window.addEventListener("resize", updateCurve);
     
     return () => {
-      container.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleResize);
+      container.removeEventListener("scroll", updateCurve);
+      window.removeEventListener("resize", updateCurve);
     };
   }, []);
-
-  const calculateCurve = (index: number) => {
-    if (containerWidth === 0) {
-      return Math.pow(Math.abs(index - (categoriesList.length - 1) / 2), 2) * 6;
-    }
-    
-    const viewportCenter = scrollLeft + (containerWidth / 2);
-    // Estimate item center (approx 96px width per item + padding)
-    const itemCenter = 32 + (index * 96) + 48;
-    const dist = Math.abs(itemCenter - viewportCenter);
-    
-    // Adjust scale based on screen width (tighter curve on mobile)
-    const scale = containerWidth < 600 ? 55 : 80;
-    
-    return Math.pow(dist / scale, 2) * 3;
-  };
 
   const toggleWishlist = (id: number) => {
     setWishlist(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
@@ -239,17 +241,17 @@ export function MenuPage() {
         {/* Categories (Horizontal Scroll) */}
         <div 
           ref={scrollContainerRef}
-          className="flex gap-6 overflow-x-auto pb-16 pt-8 scrollbar-hide -mx-4 px-8 md:mx-0 md:px-4 items-start justify-start relative"
+          className="flex gap-6 overflow-x-auto pb-20 pt-8 scrollbar-hide -mx-4 px-[35vw] md:mx-0 md:px-[40vw] items-start justify-start relative snap-x snap-mandatory"
         >
           {categoriesList.map((cat, i) => (
             <button
               key={cat.id}
-              onClick={() => setActiveCategoryId(cat.id)}
-              className="flex flex-col items-center gap-2 min-w-[72px]"
-              style={{ 
-                transform: `translateY(${calculateCurve(i)}px)`,
-                transition: 'transform 0.1s linear'
+              ref={el => itemRefs.current[i] = el}
+              onClick={() => {
+                setActiveCategoryId(cat.id);
+                itemRefs.current[i]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
               }}
+              className="flex flex-col items-center gap-2 min-w-[72px] snap-center transition-transform duration-75"
             >
               <div className={`w-16 h-16 rounded-full flex items-center justify-center bg-white shadow-sm p-3 transition-transform ${activeCategoryId === cat.id ? 'scale-110 shadow-md ring-2 ring-offset-2 ring-[#1A1A1A]' : ''}`}>
                 <img src={cat.icon} alt={cat.name} className="w-full h-full object-contain" />
