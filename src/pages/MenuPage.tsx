@@ -160,10 +160,11 @@ export function MenuPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white pb-24 pt-8 px-4 md:px-8 font-sans relative overflow-hidden">
+    <div className="min-h-screen bg-white pb-24 pt-32 px-4 md:px-8 font-sans relative overflow-hidden">
       {/* Curved Background Shape */}
       <div 
-        className="absolute top-[180px] left-1/2 -translate-x-1/2 w-[150vw] md:w-[120vw] h-[200vh] bg-[#F5F6F8] rounded-t-[50%] md:rounded-t-[100%] z-0" 
+        className="absolute top-[240px] left-1/2 -translate-x-1/2 w-[150vw] md:w-[120vw] h-[200vh] bg-[#F5F6F8] rounded-t-[50%] md:rounded-t-[100%] z-0" 
+
         style={{ pointerEvents: 'none' }}
       ></div>
 
@@ -198,12 +199,16 @@ export function MenuPage() {
         </div>
 
         {/* Categories (Horizontal Scroll) */}
-        <div className="flex gap-4 overflow-x-auto pb-8 pt-4 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
-          {categoriesList.map(cat => (
+        <div className="flex gap-6 overflow-x-auto pb-16 pt-8 scrollbar-hide -mx-4 px-8 md:mx-0 md:px-4 items-start justify-start">
+          {categoriesList.map((cat, i) => (
             <button
               key={cat.id}
               onClick={() => setActiveCategoryId(cat.id)}
               className="flex flex-col items-center gap-2 min-w-[72px]"
+              style={{ 
+                transform: `translateY(${Math.pow(Math.abs(i - (categoriesList.length - 1) / 2), 2) * 6}px)`,
+                transition: 'transform 0.3s ease'
+              }}
             >
               <div className={`w-16 h-16 rounded-full flex items-center justify-center bg-white shadow-sm p-3 transition-transform ${activeCategoryId === cat.id ? 'scale-110 shadow-md ring-2 ring-offset-2 ring-[#1A1A1A]' : ''}`}>
                 <img src={cat.icon} alt={cat.name} className="w-full h-full object-contain" />
@@ -221,7 +226,7 @@ export function MenuPage() {
         </div>
 
         {/* Product Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-2 min-h-[400px]">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8 min-h-[400px]">
           <AnimatePresence mode="popLayout">
             {paginatedProducts.length === 0 ? (
               <motion.div 
@@ -260,13 +265,8 @@ export function MenuPage() {
                     />
                   </div>
                   
-                  {/* Discount Pill */}
-                  <div className="bg-[#1A1A1A] text-white text-[0.65rem] font-bold px-3 py-1 rounded-full mb-3">
-                    -{(product.id % 30) + 10}%
-                  </div>
-
                   {/* Title & Desc */}
-                  <h3 className="text-[#1A1A1A] font-bold text-sm text-center line-clamp-1 w-full">{product.name}</h3>
+                  <h3 className="text-[#1A1A1A] font-bold text-sm text-center line-clamp-1 w-full mt-2">{product.name}</h3>
                   <p className="text-[#8E8E93] text-[0.65rem] mt-1 mb-4 text-center line-clamp-1">With Spicy Sauce</p>
 
                   {/* Price & Add Button */}
