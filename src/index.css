@@ -190,6 +190,14 @@ button, a {
   margin-top: 1.5rem;
 }
 
+.hero-cta-links-persistent {
+  position: absolute;
+  z-index: 10;
+  left: 7vw;
+  bottom: 8vh;
+  margin-top: 0;
+}
+
 .hero-cta-links a {
   display: inline-flex;
   align-items: center;
@@ -986,6 +994,11 @@ button, a {
     left: 1.4rem;
     top: auto;
     bottom: 8rem;
+  }
+
+  .hero-cta-links-persistent {
+    left: 1.4rem;
+    bottom: 2rem;
   }
 
   .hero-title h1 {

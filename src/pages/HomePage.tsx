@@ -278,12 +278,13 @@ function BurgerStory() {
         <p style={{ fontFamily: '"DM Sans", sans-serif', fontSize: '1.25rem', color: 'var(--cream)', opacity: 0.8, marginTop: '1rem' }}>
           Part neighborhood hideaway, part full-flavor playground.
         </p>
-        <div className="hero-cta-links">
-          <Link to="/menu">
-            Explore Menu <Arrow />
-          </Link>
-          <Link to="/reviews">Reviews</Link>
-        </div>
+      </div>
+
+      <div className="hero-cta-links hero-cta-links-persistent">
+        <Link to="/menu">
+          Explore Menu <Arrow />
+        </Link>
+        <Link to="/reviews">Reviews</Link>
       </div>
 
       {/* Intro Card */}
