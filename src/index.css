@@ -141,7 +141,7 @@ button, a {
   left: 50%;
   bottom: calc(1rem + 10px);
   display: flex;
-  width: min(94vw, 38rem);
+  width: min(96vw, 42rem);
   justify-content: space-around;
   transform: translateX(-50%);
   border: 1px solid rgba(23, 53, 42, 0.17);
@@ -180,6 +180,45 @@ button, a {
   transform: translateY(-3px) scale(1.1);
   color: var(--tomato);
   opacity: 1;
+}
+
+.hero-cta-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+
+.hero-cta-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 2.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(247, 242, 223, 0.8);
+  border-radius: 99rem;
+  color: var(--cream);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+.hero-cta-links a:first-child {
+  background: var(--cream);
+  color: var(--ink);
+}
+
+.hero-cta-links a:hover {
+  background: var(--lime);
+  border-color: var(--lime);
+  color: var(--ink);
+}
+
+.hero-cta-links svg {
+  width: 1rem;
+  height: 1rem;
 }
 
 .burger-scroll {

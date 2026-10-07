@@ -211,12 +211,9 @@ function BurgerStory() {
     // Mid-scroll quote fades out
     tl.to('.hero-subtitle', { opacity: 0, ease: "none", duration: 0.15 }, 0.55)
 
-    // Intro card slides up
-    tl.fromTo('.intro-card',
-      { yPercent: 105, opacity: 0 },
-      { yPercent: 0, opacity: 1, ease: "none", duration: 0.3 },
-      0.7
-    )
+    // Follow-up story copy replaces the hidden intro card
+    tl.to('.hero-subtitle-followup', { opacity: 1, ease: "none", duration: 0.12 }, 0.72)
+    tl.to('.hero-subtitle-followup', { opacity: 0, ease: "none", duration: 0.12 }, 0.88)
 
     return () => window.removeEventListener("resize", onResize)
   }, { scope: containerRef })
@@ -266,8 +263,31 @@ function BurgerStory() {
         </p>
       </div>
 
+      {/* Follow-up copy appears after the first hero quote */}
+      <div className="hero-subtitle-followup" style={{
+        position: 'absolute',
+        zIndex: 10,
+        opacity: 0,
+        top: '35%',
+        left: 'clamp(2rem, 8vw, 6rem)',
+        maxWidth: '450px'
+      }}>
+        <h2 style={{ fontFamily: '"Fraunces", serif', fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 800, color: 'var(--cream)', lineHeight: 1.1, margin: 0 }}>
+          A little green. A lot of flavor.
+        </h2>
+        <p style={{ fontFamily: '"DM Sans", sans-serif', fontSize: '1.25rem', color: 'var(--cream)', opacity: 0.8, marginTop: '1rem' }}>
+          Part neighborhood hideaway, part full-flavor playground.
+        </p>
+        <div className="hero-cta-links">
+          <Link to="/menu">
+            Explore Menu <Arrow />
+          </Link>
+          <Link to="/reviews">Reviews</Link>
+        </div>
+      </div>
+
       {/* Intro Card */}
-      <article
+      {/* <article
         className="intro-card"
         style={{
           position: 'absolute',
@@ -296,7 +316,7 @@ function BurgerStory() {
             Find us
           </Link>
         </div>
-      </article>
+      </article> */}
 
     </section>
   )

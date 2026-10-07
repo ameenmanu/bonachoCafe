@@ -7,6 +7,11 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { Navbar } from "../components/Navbar"
 import Preloader from "../components/Preloader"
 const navItems = [
+  {
+    label: "Home",
+    to: "/",
+    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9"/><path d="M9 20v-6h6v6"/></svg>
+  },
   { 
     label: "Menu", 
     to: "/menu", 
