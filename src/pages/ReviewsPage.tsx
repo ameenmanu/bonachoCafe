@@ -235,13 +235,13 @@ export function ReviewsPage() {
                 <span>Post Your Drink Photo & Review</span>
               </button>
 
-              <button
+              {/* <button
                 onClick={() => handleNavigate('popular')}
                 className="py-3 px-5 rounded-xl bg-[#18644A]/10 hover:bg-[#18644A]/15 text-[#17352A] text-xs sm:text-sm font-medium transition-colors border border-[#18644A]/20 flex items-center gap-2 cursor-pointer outline-none"
               >
-                <span>Browse Most Popular Items</span>
-                <ChevronRight className="w-4 h-4 text-[#18644A]" />
-              </button>
+                {/* <span>Browse Most Popular Items</span> */}
+                {/* <ChevronRight className="w-4 h-4 text-[#18644A]" />
+              </button>  */}
             </div>
           </div>
 
