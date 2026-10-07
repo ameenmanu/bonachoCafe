@@ -29,7 +29,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
 
   return (
     <motion.article 
-      className="bg-white/90 rounded-2xl p-5 sm:p-6 border border-[#EADBCE] shadow-xs hover:border-[#DAC5B3] transition-colors flex flex-col justify-between"
+      className="bg-[#FFFDF4] rounded-2xl p-5 sm:p-6 border border-[#18644A]/20 shadow-xs hover:border-[#18644A]/45 transition-colors flex flex-col justify-between"
       whileHover={{ y: -5, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)" }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
     >
@@ -37,32 +37,32 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
         {/* Top Row: Author lockup & Star Rating */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#EFE7DE] text-[#4A3A2F] flex items-center justify-center font-medium text-xs border border-[#E0D3C5] shrink-0">
+            <div className="w-10 h-10 rounded-full bg-[#18644A]/10 text-[#17352A] flex items-center justify-center font-medium text-xs border border-[#18644A]/20 shrink-0">
               {initials}
             </div>
 
             <div>
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="font-semibold text-sm sm:text-base text-[#2C221B]">
+                <span className="font-semibold text-sm sm:text-base text-[#17352A]">
                   {review.author}
                 </span>
                 {review.isVerified && (
-                  <span className="flex items-center gap-1 text-[11px] text-[#6E8B62] font-medium">
-                    <CheckCircle className="w-3 h-3 fill-current text-[#6E8B62]" />
+                  <span className="flex items-center gap-1 text-[11px] text-[#18644A] font-medium">
+                    <CheckCircle className="w-3 h-3 fill-current text-[#18644A]" />
                     <span>Verified Customer</span>
                   </span>
                 )}
               </div>
 
               {/* Zero-pill metadata line with typographical separators */}
-              <div className="flex items-center gap-1.5 text-xs text-[#8C7A6D] mt-0.5">
+              <div className="flex items-center gap-1.5 text-xs text-[#526159] mt-0.5">
                 <span>{review.date}</span>
                 {review.drinkName && (
                   <>
                     <span aria-hidden="true">·</span>
                     <button
                       onClick={() => onFilterByDrink(review.drinkId!)}
-                      className="text-[#9A5B32] font-medium hover:underline focus:outline-none cursor-pointer"
+                      className="text-[#18644A] font-medium hover:underline focus:outline-none cursor-pointer"
                     >
                       {review.drinkName}
                     </button>
@@ -91,7 +91,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
         {review.photos && review.photos.length > 0 && (
           <div className="mt-4 flex gap-3 overflow-x-auto pb-2 snap-x hide-scrollbar">
             {review.photos.map((url, idx) => (
-              <div key={idx} className="relative group rounded-xl overflow-hidden bg-[#F2ECE4] border border-[#EADBCE]/80 min-w-[200px] sm:min-w-[240px] shrink-0 snap-start">
+              <div key={idx} className="relative group rounded-xl overflow-hidden bg-[#F7F2DF] border border-[#18644A]/20 min-w-[200px] sm:min-w-[240px] shrink-0 snap-start">
                 <img
                   src={url}
                   alt={`Photo ${idx + 1} by ${review.author}`}
@@ -118,7 +118,7 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
         )}
 
         {/* Review Comment Body */}
-        <p className="mt-4 text-sm text-[#43342A] leading-relaxed">
+        <p className="mt-4 text-sm text-[#17352A] leading-relaxed">
           {review.comment}
         </p>
 
@@ -126,17 +126,17 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
 
         {/* Barista Official Response */}
         {review.baristaReply && (
-          <div className="mt-4 p-3.5 rounded-xl bg-[#F7F2EB] border-l-2 border-[#B87C4C] text-xs space-y-1">
-            <div className="flex items-center justify-between text-[#8C5D36] font-semibold">
+          <div className="mt-4 p-3.5 rounded-xl bg-[#F7F2DF] border-l-2 border-[#18644A] text-xs space-y-1">
+            <div className="flex items-center justify-between text-[#18644A] font-semibold">
               <span className="flex items-center gap-1.5">
                 <MessageSquare className="w-3.5 h-3.5" />
                 {review.baristaReply.author}
               </span>
-              <span className="text-[10px] text-[#9C8B7E] font-normal">
+              <span className="text-[10px] text-[#526159] font-normal">
                 {review.baristaReply.date}
               </span>
             </div>
-            <p className="text-[#4A3A2F] leading-normal">
+            <p className="text-[#17352A] leading-normal">
               {review.baristaReply.text}
             </p>
           </div>
@@ -144,22 +144,22 @@ export const ReviewCard: React.FC<ReviewCardProps> = ({
       </div>
 
       {/* Card Footer: Helpful counter */}
-      <div className="mt-4 pt-3 border-t border-[#EADBCE]/70 flex items-center justify-between text-xs text-[#7B6858]">
+      <div className="mt-4 pt-3 border-t border-[#18644A]/20 flex items-center justify-between text-xs text-[#526159]">
         <button
           onClick={() => onUpvoteReview(review.id)}
           className={`flex items-center gap-1.5 py-1 px-2.5 rounded-lg border transition-colors cursor-pointer ${
             isUpvoted
-              ? 'bg-[#EFE7DE] text-[#2C221B] border-[#D9C7B5] font-semibold'
-              : 'hover:bg-[#F2ECE4] text-[#655345] border-transparent'
+              ? 'bg-[#18644A]/10 text-[#17352A] border-[#18644A]/25 font-semibold'
+              : 'hover:bg-[#18644A]/10 text-[#526159] border-transparent'
           }`}
           aria-label="Mark review as helpful"
         >
-          <ThumbsUp className={`w-3.5 h-3.5 ${isUpvoted ? 'fill-current text-[#B87C4C]' : ''}`} />
+          <ThumbsUp className={`w-3.5 h-3.5 ${isUpvoted ? 'fill-current text-[#18644A]' : ''}`} />
           <span>Helpful</span>
           <span className="tabular-nums">({review.helpfulCount})</span>
         </button>
 
-        <span className="text-[11px] text-[#A69588]">
+        <span className="text-[11px] text-[#526159]">
           Café Bonacho Guest Review
         </span>
       </div>

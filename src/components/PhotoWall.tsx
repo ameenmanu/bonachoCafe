@@ -22,17 +22,17 @@ export const PhotoWall: React.FC<PhotoWallProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#2C221B]">
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#17352A]">
               Guest Drink Photo Gallery
             </h2>
           </div>
-          <p className="text-xs sm:text-sm text-[#7B6858] mt-1">
+          <p className="text-xs sm:text-sm text-[#526159] mt-1">
             Real snapshots from morning pour-overs to afternoon cold foams.
           </p>
         </div>
 
-        <div className="flex items-center gap-1.5 text-xs text-[#8C7A6D]">
-          <Camera className="w-3.5 h-3.5 text-[#B87C4C]" />
+        <div className="flex items-center gap-1.5 text-xs text-[#526159]">
+          <Camera className="w-3.5 h-3.5 text-[#18644A]" />
           <span className="tabular-nums font-semibold">{photoReviews.length} photos</span>
           <span>from verified visits</span>
         </div>
@@ -43,7 +43,7 @@ export const PhotoWall: React.FC<PhotoWallProps> = ({
         {photoReviews.slice(0, 8).map((rev) => (
           <div
             key={rev.id}
-            className="group relative rounded-2xl overflow-hidden bg-[#EFE7DE] aspect-square border border-[#EADBCE] cursor-pointer shadow-2xs"
+            className="group relative rounded-2xl overflow-hidden bg-[#F7F2DF] aspect-square border border-[#18644A]/20 cursor-pointer shadow-2xs"
             onClick={() => onOpenPhotoLightbox(rev.photoUrl!, rev.photoCaption, rev.author)}
           >
             <img

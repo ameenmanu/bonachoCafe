@@ -205,31 +205,31 @@ export function ReviewsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] text-[#2C221B] flex flex-col selection:bg-[#EADBCE] pt-24 pb-20">
+    <div className="min-h-screen bg-[#F7F2DF] text-[#17352A] flex flex-col selection:bg-[#DCEB51] pt-24 pb-20">
       
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-10 sm:space-y-14">
         
         {/* Hero Section */}
-        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#2C221B] via-[#382C23] to-[#201813] text-[#FAF8F5] p-6 sm:p-10 lg:p-12 shadow-xl border border-[#48372C]">
+        <section className="relative overflow-hidden rounded-3xl bg-[#FFFDF4] text-[#17352A] p-6 sm:p-10 lg:p-12 shadow-xl border border-[#18644A]/20">
           <div className="relative z-10 max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FAF8F5]/10 backdrop-blur-md text-[#E6C285] text-xs font-medium">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#18644A]/10 text-[#18644A] text-xs font-medium">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Artisan Pour Reviews & Community Photos</span>
             </div>
 
-            <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight" style={{ fontFamily: '"Fraunces", serif' }}>
+            <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#17352A] leading-tight" style={{ fontFamily: '"Fraunces", serif' }}>
               Sip, rate, and discover your next favorite cup.
             </h1>
 
-            <p className="text-sm sm:text-base text-[#D4C4B5] leading-relaxed max-w-2xl">
+            <p className="text-sm sm:text-base text-[#526159] leading-relaxed max-w-2xl">
               Welcome to the Café Bonacho tasting board. Explore unfiltered guest reviews, real photo drops, and find out which signature creations are stealing hearts this week.
             </p>
 
             <div className="pt-2 flex flex-wrap items-center gap-3">
               <button
                 onClick={() => handleNavigate('write-review')}
-                className="py-3 px-5 rounded-xl bg-[#E6C285] hover:bg-[#D4AC68] text-[#2C221B] text-xs sm:text-sm font-semibold transition-all shadow-md active:scale-[0.98] flex items-center gap-2 cursor-pointer border-none outline-none"
+                className="py-3 px-5 rounded-xl bg-[#18644A] hover:bg-[#17352A] text-[#FFFDF4] text-xs sm:text-sm font-semibold transition-all shadow-md active:scale-[0.98] flex items-center gap-2 cursor-pointer border-none outline-none"
               >
                 <Plus className="w-4 h-4" />
                 <span>Post Your Drink Photo & Review</span>
@@ -237,22 +237,22 @@ export function ReviewsPage() {
 
               <button
                 onClick={() => handleNavigate('popular')}
-                className="py-3 px-5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs sm:text-sm font-medium transition-colors border border-white/15 flex items-center gap-2 cursor-pointer outline-none"
+                className="py-3 px-5 rounded-xl bg-[#18644A]/10 hover:bg-[#18644A]/15 text-[#17352A] text-xs sm:text-sm font-medium transition-colors border border-[#18644A]/20 flex items-center gap-2 cursor-pointer outline-none"
               >
                 <span>Browse Most Popular Items</span>
-                <ChevronRight className="w-4 h-4 text-[#E6C285]" />
+                <ChevronRight className="w-4 h-4 text-[#18644A]" />
               </button>
             </div>
           </div>
 
           {/* Decorative subtle background swirl */}
-          <div className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-[#B87C4C]/15 blur-3xl pointer-events-none" />
+          <div className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-[#DCEB51]/30 blur-3xl pointer-events-none" />
         </section>
 
         {/* Success Toast */}
         {toastMessage && (
-          <div className="p-4 rounded-2xl bg-[#EFECE6] border border-[#6E8B62] text-[#2C3827] flex items-center gap-3 shadow-md animate-in fade-in slide-in-from-top-2 duration-300">
-            <CheckCircle2 className="w-5 h-5 text-[#4E7541] shrink-0" />
+          <div className="p-4 rounded-2xl bg-[#FFFDF4] border border-[#18644A]/30 text-[#17352A] flex items-center gap-3 shadow-md animate-in fade-in slide-in-from-top-2 duration-300">
+            <CheckCircle2 className="w-5 h-5 text-[#18644A] shrink-0" />
             <span className="text-xs sm:text-sm font-medium">{toastMessage}</span>
           </div>
         )}
@@ -277,11 +277,11 @@ export function ReviewsPage() {
         </div>
 
         {/* Tabs for General / Product Reviews */}
-        <div className="flex justify-center border-b border-[#EADBCE] mb-8">
+        <div className="flex justify-center border-b border-[#18644A]/20 mb-8">
           <button
             onClick={() => setActiveTab('general')}
             className={`px-6 py-3 text-sm sm:text-base font-semibold border-b-2 transition-colors cursor-pointer ${
-              activeTab === 'general' ? 'border-[#2C221B] text-[#2C221B]' : 'border-transparent text-[#8D6B50] hover:text-[#2C221B]'
+              activeTab === 'general' ? 'border-[#18644A] text-[#17352A]' : 'border-transparent text-[#526159] hover:text-[#17352A]'
             }`}
           >
             General Cafe Reviews
@@ -289,7 +289,7 @@ export function ReviewsPage() {
           <button
             onClick={() => setActiveTab('product')}
             className={`px-6 py-3 text-sm sm:text-base font-semibold border-b-2 transition-colors cursor-pointer ${
-              activeTab === 'product' ? 'border-[#2C221B] text-[#2C221B]' : 'border-transparent text-[#8D6B50] hover:text-[#2C221B]'
+              activeTab === 'product' ? 'border-[#18644A] text-[#17352A]' : 'border-transparent text-[#526159] hover:text-[#17352A]'
             }`}
           >
             Specific Product Reviews
@@ -331,38 +331,38 @@ export function ReviewsPage() {
 
         {/* Reviews Feed Section */}
         <section id="reviews" className="space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-[#EADBCE]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-[#18644A]/20">
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-serif text-2xl font-bold text-[#2C221B]" style={{ fontFamily: '"Fraunces", serif' }}>
+                <h3 className="font-serif text-2xl font-bold text-[#17352A]" style={{ fontFamily: '"Fraunces", serif' }}>
                   {activeTab === 'general' ? 'General Customer Reviews' : 'Customer Drink Reviews'}
                 </h3>
-                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#EFE7DE] text-[#655345] tabular-nums">
+                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#18644A]/10 text-[#18644A] tabular-nums">
                   {filteredReviews.length}
                 </span>
               </div>
 
               {/* Active Filter Indicators */}
               {(selectedDrinkId || selectedRating !== null || photosOnlyFilter || searchQuery) && (
-                <div className="flex items-center gap-2 flex-wrap text-xs text-[#7B6858] mt-1.5">
+                <div className="flex items-center gap-2 flex-wrap text-xs text-[#526159] mt-1.5">
                   <span>Active filters:</span>
                   {selectedDrinkId && activeTab === 'product' && (
-                    <span className="text-[#2C221B] font-medium">
+                    <span className="text-[#17352A] font-medium">
                       Drink: {POPULAR_DRINKS.find((d) => d.id === selectedDrinkId)?.name || 'Custom'}
                     </span>
                   )}
                   {selectedRating !== null && (
-                    <span className="text-[#2C221B] font-medium">
+                    <span className="text-[#17352A] font-medium">
                       · {selectedRating} Stars
                     </span>
                   )}
                   {photosOnlyFilter && (
-                    <span className="text-[#2C221B] font-medium">
+                    <span className="text-[#17352A] font-medium">
                       · Photos only
                     </span>
                   )}
                   {searchQuery && (
-                    <span className="text-[#2C221B] font-medium">
+                    <span className="text-[#17352A] font-medium">
                       · Keyword: "{searchQuery}"
                     </span>
                   )}
@@ -374,7 +374,7 @@ export function ReviewsPage() {
                       setSearchQuery('');
                       setCurrentPage(1);
                     }}
-                    className="text-[#B87C4C] hover:underline font-semibold ml-1 cursor-pointer border-none bg-transparent"
+                    className="text-[#18644A] hover:underline font-semibold ml-1 cursor-pointer border-none bg-transparent"
                   >
                     Reset all
                   </button>
@@ -384,9 +384,9 @@ export function ReviewsPage() {
 
             <button
               onClick={() => setIsWriteModalOpen(true)}
-              className="sm:hidden w-full py-2.5 px-4 rounded-xl bg-[#2C221B] text-white text-xs font-medium flex items-center justify-center gap-2 border-none"
+              className="sm:hidden w-full py-2.5 px-4 rounded-xl bg-[#18644A] text-[#FFFDF4] text-xs font-medium flex items-center justify-center gap-2 border-none"
             >
-              <Plus className="w-4 h-4 text-[#E6C285]" />
+              <Plus className="w-4 h-4 text-[#DCEB51]" />
               <span>Write a Review</span>
             </button>
           </div>
@@ -413,21 +413,21 @@ export function ReviewsPage() {
 
                 {/* Pagination Controls */}
                 {totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-3 py-4 border-t border-[#EADBCE]">
+                  <div className="flex items-center justify-center gap-3 py-4 border-t border-[#18644A]/20">
                     <button
                       onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                       disabled={currentPage === 1}
-                      className="px-4 py-2 rounded-xl border border-[#EADBCE] text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#EFE7DE] transition-colors cursor-pointer"
+                      className="px-4 py-2 rounded-xl border border-[#18644A]/25 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#18644A]/10 transition-colors cursor-pointer"
                     >
                       Previous
                     </button>
-                    <span className="text-sm font-medium text-[#7B6858]">
+                    <span className="text-sm font-medium text-[#526159]">
                       Page {currentPage} of {totalPages}
                     </span>
                     <button
                       onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                       disabled={currentPage === totalPages}
-                      className="px-4 py-2 rounded-xl border border-[#EADBCE] text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#EFE7DE] transition-colors cursor-pointer"
+                      className="px-4 py-2 rounded-xl border border-[#18644A]/25 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#18644A]/10 transition-colors cursor-pointer"
                     >
                       Next
                     </button>
@@ -435,12 +435,12 @@ export function ReviewsPage() {
                 )}
               </>
             ) : (
-              <div className="text-center py-16 px-4 bg-white/60 rounded-3xl border border-dashed border-[#DAC7B7] space-y-3">
-                <Coffee className="w-10 h-10 text-[#B87C4C] mx-auto opacity-70" />
-                <h4 className="font-serif text-lg font-bold text-[#2C221B]" style={{ fontFamily: '"Fraunces", serif' }}>
+              <div className="text-center py-16 px-4 bg-[#FFFDF4] rounded-3xl border border-dashed border-[#18644A]/30 space-y-3">
+                <Coffee className="w-10 h-10 text-[#18644A] mx-auto opacity-70" />
+                <h4 className="font-serif text-lg font-bold text-[#17352A]" style={{ fontFamily: '"Fraunces", serif' }}>
                   No reviews matching your filters
                 </h4>
-                <p className="text-xs text-[#7B6858] max-w-sm mx-auto">
+                <p className="text-xs text-[#526159] max-w-sm mx-auto">
                   Try loosening your filter parameters, searching for a different roast note, or be the first to post a review!
                 </p>
                 <div className="pt-2 flex items-center justify-center gap-3">
@@ -452,13 +452,13 @@ export function ReviewsPage() {
                       setSearchQuery('');
                       setCurrentPage(1);
                     }}
-                    className="py-2 px-4 rounded-xl bg-[#FAF8F5] border border-[#E0D3C5] text-xs font-medium text-[#4A3A2F] hover:bg-[#EFE7DE] cursor-pointer"
+                    className="py-2 px-4 rounded-xl bg-[#F7F2DF] border border-[#18644A]/25 text-xs font-medium text-[#17352A] hover:bg-[#18644A]/10 cursor-pointer"
                   >
                     Clear All Filters
                   </button>
                   <button
                     onClick={() => handleNavigate('write-review')}
-                    className="py-2 px-4 rounded-xl bg-[#2C221B] text-[#FAF8F5] text-xs font-medium hover:bg-[#43342A] cursor-pointer border-none"
+                    className="py-2 px-4 rounded-xl bg-[#18644A] text-[#FFFDF4] text-xs font-medium hover:bg-[#17352A] cursor-pointer border-none"
                   >
                     Post First Review
                   </button>

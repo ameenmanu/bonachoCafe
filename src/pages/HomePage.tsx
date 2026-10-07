@@ -361,11 +361,11 @@ function FriesChapter() {
 }
 
 const TopProducts = [
-  { id: 1, name: "Vanilla Bean Flat White", rating: "5.0", reviews: 124, img: "/assets/blueberry-shake.png", price: "$4.50" },
-  { id: 2, name: "Loaded Truffle Fries", rating: "4.9", reviews: 89, img: "/assets/loaded-fries.png", price: "$8.00" },
-  { id: 3, name: "Strawberry Burst Shake", rating: "5.0", reviews: 210, img: "/assets/strawberry-shake.png", price: "$6.50" },
-  { id: 4, name: "Berry Delight Cup", rating: "4.8", reviews: 156, img: "/assets/berry-cup.png", price: "$5.50" },
-  { id: 5, name: "Classic Zinger Burger", rating: "4.9", reviews: 302, img: "/assets/burger-hero.png", price: "$12.00" },
+  { id: 1, name: "Vanilla Bean Flat White", rating: "5.0", reviews: 124, img: "/assets/blueberry-shake.png", price: "₹4.50" },
+  { id: 2, name: "Loaded Truffle Fries", rating: "4.9", reviews: 89, img: "/assets/loaded-fries.png", price: "₹8.00" },
+  { id: 3, name: "Strawberry Burst Shake", rating: "5.0", reviews: 210, img: "/assets/strawberry-shake.png", price: "₹6.50" },
+  { id: 4, name: "Berry Delight Cup", rating: "4.8", reviews: 156, img: "/assets/berry-cup.png", price: "₹5.50" },
+  { id: 5, name: "Classic Zinger Burger", rating: "4.9", reviews: 302, img: "/assets/burger-hero.png", price: "₹12.00" },
 ]
 
 function HighlightsSection() {

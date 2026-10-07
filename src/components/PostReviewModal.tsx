@@ -119,14 +119,14 @@ export const PostReviewModal: React.FC<PostReviewModalProps> = ({
   };
 
   return (
-    <div className="bg-[#FAF8F5] w-full rounded-2xl sm:rounded-3xl shadow-xl border border-[#EADBCE] flex flex-col overflow-hidden mb-12">
+    <div className="bg-[#F7F2DF] w-full rounded-2xl sm:rounded-3xl shadow-xl border border-[#18644A]/20 flex flex-col overflow-hidden mb-12">
       {/* Card Header */}
-      <div className="p-4 sm:p-6 border-b border-[#EADBCE] bg-white flex items-center justify-between shrink-0">
+      <div className="p-4 sm:p-6 border-b border-[#18644A]/20 bg-[#FFFDF4] flex items-center justify-between shrink-0">
         <div>
-          <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#2C221B]">
+          <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#17352A]">
             Share Your Bonacho Experience
           </h3>
-          <p className="text-sm text-[#7B6858] mt-1">
+          <p className="text-sm text-[#526159] mt-1">
             Post your photos, rate your experience, and help fellow coffee lovers.
           </p>
         </div>
@@ -151,11 +151,11 @@ export const PostReviewModal: React.FC<PostReviewModalProps> = ({
           )}
 
           {/* Review Type Toggle */}
-          <div className="flex border border-[#E8DEC8] rounded-xl overflow-hidden bg-white">
+          <div className="flex border border-[#18644A]/20 rounded-xl overflow-hidden bg-[#FFFDF4]">
             <button
               type="button"
               onClick={() => setReviewType('general')}
-              className={`flex-1 py-2.5 text-sm font-medium transition-colors cursor-pointer ${reviewType === 'general' ? 'bg-[#2C221B] text-[#FAF8F5]' : 'text-[#6A5748] hover:bg-[#F2ECE4]'
+              className={`flex-1 py-2.5 text-sm font-medium transition-colors cursor-pointer ${reviewType === 'general' ? 'bg-[#18644A] text-[#FFFDF4]' : 'text-[#17352A] hover:bg-[#18644A]/10'
                 }`}
             >
               General Cafe Review
@@ -163,7 +163,7 @@ export const PostReviewModal: React.FC<PostReviewModalProps> = ({
             <button
               type="button"
               onClick={() => setReviewType('product')}
-              className={`flex-1 py-2.5 text-sm font-medium transition-colors cursor-pointer ${reviewType === 'product' ? 'bg-[#2C221B] text-[#FAF8F5]' : 'text-[#6A5748] hover:bg-[#F2ECE4]'
+              className={`flex-1 py-2.5 text-sm font-medium transition-colors cursor-pointer ${reviewType === 'product' ? 'bg-[#18644A] text-[#FFFDF4]' : 'text-[#17352A] hover:bg-[#18644A]/10'
                 }`}
             >
               Product Review
@@ -172,7 +172,7 @@ export const PostReviewModal: React.FC<PostReviewModalProps> = ({
 
           {/* 1. Overall Rating */}
           <div className="space-y-2">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6A5748]">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#18644A]">
               Rating *
             </label>
             <div className="flex items-center gap-2">
@@ -189,13 +189,13 @@ export const PostReviewModal: React.FC<PostReviewModalProps> = ({
                     <Star
                       className={`w-7 h-7 sm:w-8 sm:h-8 ${star <= (hoverRating ?? rating)
                           ? 'fill-current text-[#D9822B]'
-                          : 'text-[#D0C2B5]'
+                          : 'text-[#18644A]/25'
                         }`}
                     />
                   </button>
                 ))}
               </div>
-              <span className="text-xs sm:text-sm font-medium text-[#4A3A2F] ml-2">
+              <span className="text-xs sm:text-sm font-medium text-[#17352A] ml-2">
                 {ratingDescriptions[hoverRating ?? rating]}
               </span>
             </div>
@@ -204,25 +204,25 @@ export const PostReviewModal: React.FC<PostReviewModalProps> = ({
           {/* 2. Select Popular Drink or Custom (Only if Product Review) */}
           {reviewType === 'product' && (
             <div className="space-y-2">
-              <label className="block text-xs font-semibold uppercase tracking-wider text-[#6A5748]">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#18644A]">
                 Which Drink Did You Have? *
               </label>
               
               <div className="relative mb-2">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8C7A6D]" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#18644A]" />
                 <input
                   type="text"
                   placeholder="Search drinks..."
                   value={drinkSearch}
                   onChange={(e) => setDrinkSearch(e.target.value)}
-                  className="w-full py-2 pl-9 pr-3 rounded-xl bg-white border border-[#E8DEC8] text-xs sm:text-sm text-[#2C221B] focus:outline-none focus:ring-2 focus:ring-[#B87C4C]/40"
+                  className="w-full py-2 pl-9 pr-3 rounded-xl bg-[#FFFDF4] border border-[#18644A]/20 text-xs sm:text-sm text-[#17352A] focus:outline-none focus:ring-2 focus:ring-[#18644A]/30"
                 />
               </div>
 
               <select
                 value={selectedDrinkId}
                 onChange={(e) => setSelectedDrinkId(e.target.value)}
-                className="w-full py-2.5 px-3 rounded-xl bg-white border border-[#E8DEC8] text-xs sm:text-sm text-[#2C221B] focus:outline-none focus:ring-2 focus:ring-[#B87C4C]/40"
+                className="w-full py-2.5 px-3 rounded-xl bg-[#FFFDF4] border border-[#18644A]/20 text-xs sm:text-sm text-[#17352A] focus:outline-none focus:ring-2 focus:ring-[#18644A]/30"
               >
                 {popularDrinks
                   .filter(drink => 
@@ -243,7 +243,7 @@ export const PostReviewModal: React.FC<PostReviewModalProps> = ({
                   placeholder="Enter drink name (e.g. Vanilla Bean Flat White)"
                   value={customDrinkName}
                   onChange={(e) => setCustomDrinkName(e.target.value)}
-                  className="w-full mt-2 py-2 px-3 rounded-xl bg-white border border-[#E8DEC8] text-xs sm:text-sm text-[#2C221B] focus:outline-none focus:ring-2 focus:ring-[#B87C4C]/40"
+                  className="w-full mt-2 py-2 px-3 rounded-xl bg-[#FFFDF4] border border-[#18644A]/20 text-xs sm:text-sm text-[#17352A] focus:outline-none focus:ring-2 focus:ring-[#18644A]/30"
                 />
               )}
             </div>
@@ -251,7 +251,7 @@ export const PostReviewModal: React.FC<PostReviewModalProps> = ({
 
           {/* 3. Customer Name */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6A5748]">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#18644A]">
               Your Name / Nickname *
             </label>
             <input
@@ -260,13 +260,13 @@ export const PostReviewModal: React.FC<PostReviewModalProps> = ({
               placeholder="e.g. Maya Ross"
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
-              className="w-full py-2 px-3 rounded-xl bg-white border border-[#E8DEC8] text-xs sm:text-sm text-[#2C221B] focus:outline-none focus:ring-2 focus:ring-[#B87C4C]/40"
+              className="w-full py-2 px-3 rounded-xl bg-[#FFFDF4] border border-[#18644A]/20 text-xs sm:text-sm text-[#17352A] focus:outline-none focus:ring-2 focus:ring-[#18644A]/30"
             />
           </div>
 
           {/* 4. Detailed Review Comment */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6A5748]">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#18644A]">
               Your Review *
             </label>
             <textarea
@@ -275,28 +275,28 @@ export const PostReviewModal: React.FC<PostReviewModalProps> = ({
               placeholder="Tell others about your experience..."
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              className="w-full py-2 px-3 rounded-xl bg-white border border-[#E8DEC8] text-xs sm:text-sm text-[#2C221B] focus:outline-none focus:ring-2 focus:ring-[#B87C4C]/40 resize-none"
+              className="w-full py-2 px-3 rounded-xl bg-[#FFFDF4] border border-[#18644A]/20 text-xs sm:text-sm text-[#17352A] focus:outline-none focus:ring-2 focus:ring-[#18644A]/30 resize-none"
             />
           </div>
 
           {/* 5. Photo Upload / Camera Capture (Multiple) */}
           <div className="space-y-2">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6A5748]">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#18644A]">
               Photos (Optional, but loved by the community!)
             </label>
 
             <div className="space-y-3">
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-[#D6C5B5] hover:border-[#B87C4C] rounded-2xl p-6 text-center cursor-pointer bg-white/60 hover:bg-white transition-all flex flex-col items-center justify-center gap-2"
+                className="border-2 border-dashed border-[#18644A]/30 hover:border-[#18644A] rounded-2xl p-6 text-center cursor-pointer bg-[#FFFDF4]/70 hover:bg-[#FFFDF4] transition-all flex flex-col items-center justify-center gap-2"
               >
-                <div className="w-10 h-10 rounded-full bg-[#EFE7DE] flex items-center justify-center text-[#B87C4C]">
+                <div className="w-10 h-10 rounded-full bg-[#18644A]/10 flex items-center justify-center text-[#18644A]">
                   <Camera className="w-5 h-5" />
                 </div>
-                <div className="text-xs sm:text-sm font-medium text-[#2C221B]">
+                <div className="text-xs sm:text-sm font-medium text-[#17352A]">
                   Upload photos from device
                 </div>
-                <p className="text-[11px] text-[#8C7A6D]">
+                <p className="text-[11px] text-[#526159]">
                   PNG, JPG, or WEBP. You can select multiple files.
                 </p>
                 <input
@@ -313,7 +313,7 @@ export const PostReviewModal: React.FC<PostReviewModalProps> = ({
               {photos.length > 0 && (
                 <div className="flex gap-3 overflow-x-auto pb-2 snap-x hide-scrollbar">
                   {photos.map((url, idx) => (
-                    <div key={idx} className="relative rounded-xl overflow-hidden border border-[#EADBCE] bg-[#F2ECE4] w-24 h-24 shrink-0 snap-start">
+                    <div key={idx} className="relative rounded-xl overflow-hidden border border-[#18644A]/20 bg-[#FFFDF4] w-24 h-24 shrink-0 snap-start">
                       <img
                         src={url}
                         alt="Preview"
@@ -337,7 +337,7 @@ export const PostReviewModal: React.FC<PostReviewModalProps> = ({
           </div>
 
           {/* Submit Footer */}
-          <div className="p-4 sm:p-6 border-t border-[#EADBCE] bg-[#FAF8F5] shrink-0 flex items-center justify-end gap-3 mt-auto">
+          <div className="p-4 sm:p-6 border-t border-[#18644A]/20 bg-[#F7F2DF] shrink-0 flex items-center justify-end gap-3 mt-auto">
             <button
               type="submit"
               className="py-3 px-8 rounded-xl bg-[#ef4d32] hover:bg-[#d6452d] text-white text-sm font-bold transition-all shadow-md active:scale-[0.98] cursor-pointer flex items-center gap-2"

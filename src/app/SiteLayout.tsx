@@ -1,5 +1,5 @@
-import { useEffect } from "react"
-import { Outlet, useLocation, NavLink } from "react-router"
+import { useEffect, useRef } from "react"
+import { Outlet, useLocation, NavLink, useNavigate } from "react-router"
 import { AnimatePresence, motion } from "framer-motion"
 import Lenis from "lenis"
 import gsap from "gsap"
@@ -31,22 +31,40 @@ const navItems = [
 
 export function SiteLayout() {
   const location = useLocation()
+  const navigate = useNavigate()
+  const lenisRef = useRef<Lenis | null>(null)
+  const initialPathnameRef = useRef(location.pathname)
 
   useEffect(() => {
     const lenis = new Lenis({ lerp: 0.08 }) // lower = smoother/slower
+    lenisRef.current = lenis
+    const scrollToTop = () => lenis.scrollTo(0, { duration: 0.9 })
+    window.addEventListener("site-scroll-to-top", scrollToTop)
     lenis.on("scroll", ScrollTrigger.update)
     const tick = (t: number) => lenis.raf(t * 1000)
     gsap.ticker.add(tick)
     gsap.ticker.lagSmoothing(0)
     return () => {
       gsap.ticker.remove(tick)
+      window.removeEventListener("site-scroll-to-top", scrollToTop)
+      lenisRef.current = null
       lenis.destroy()
     }
   }, [])
 
   useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [location.pathname])
+    const navigation = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined
+    if (navigation?.type === "reload" && initialPathnameRef.current !== "/") {
+      navigate("/", { replace: true })
+    }
+  }, [navigate])
+
+  useEffect(() => {
+    lenisRef.current?.scrollTo(0, { immediate: true })
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => ScrollTrigger.refresh())
+    })
+  }, [location.pathname, navigate])
 
   return (
     <div className="site-shell">
